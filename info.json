@@ -56,7 +56,7 @@
             },
             {
                 "name": "Server_fqhn",
-                "value": "jmcmurray-jmcmurray.fortidemo.fortinet.com:14006",
+                "value": "example.fortidemo.fortinet.com",
                 "default_value": "master.fortisoar.in"
             }
         ],

@@ -2,7 +2,7 @@
 
 **Version**: 0.1.0 (Beta) 
 
-**Date**: 2024.09.22 
+**Date**: 2024.09.24 
 
 ## Overview  
 

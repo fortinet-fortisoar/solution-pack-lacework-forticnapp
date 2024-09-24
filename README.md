@@ -7,7 +7,7 @@
 
 ## Overview
 
-Lacework FortiCNAPP Composite Alerts Solution Pack is designed to provide a set of enrichment playbooks. These playbooks' contents are essential for seamless and comprehensive FortiSIEM integration in FortiSOAR. Through enhancements in the FortiSOAR modules to suit the FortiSIEM ingestion better and by providing you with helpful use case playbooks, the solution pack aims to enhance the utility and experience of the integration. Once installed, you can see the installed playbooks in FortiSIEM's native UI (v6.4.0 onwards).
+The **Lacework FortiCNAPP Solution Pack** for FortiSOAR demonstrates an incident response flow for the "Potentially Compromised Host" composite alert. Alerts are either pulled or pushed (via webhook) into FortiSOAR, creating a local alert. Once the alert is created, IP, Domain, and FileHash indicators are enriched using configured sources (e.g., Fortinet FortiGuard Threat Intelligence connector). The incident response playbook is then triggered, prompting the user to select one of four actions: Stop Instance, Stop Instance & Snapshot, Take Snapshot, or No Action. FortiSOAR uses the appropriate cloud connector to execute the selected action and notifies the user upon completion, with a prompt to close the alert in the Lacework FortiCNAPP console.
 
 # Next Steps 
  

@@ -11,5 +11,5 @@ Lacework FortiCNAPP Composite Alerts Solution Pack is designed to provide a set 
 
 # Next Steps 
  
-| [Overview](https://github.com/credibleforce/solution-pack-lacework-forticnapp/blob/develop/docs/setup.md#Overview) | [Configuration](https://github.com/fortinet-fortisoar/solution-pack-lacework-forticnapp/blob/develop/docs/setup.md#configuration) | [Usage](https://github.com/fortinet-fortisoar/solution-pack-lacework-forticnapp/blob/develop/docs/usage.md) | [Contents](https://github.com/fortinet-fortisoar/solution-pack-lacework-forticnapp/blob/develop/docs/contents.md) |
+| [Overview](https://github.com/credibleforce/solution-pack-lacework-forticnapp/blob/develop/docs/setup.md#overview) | [Connector Configuration](https://github.com/credibleforce/solution-pack-lacework-forticnapp/blob/develop/docs/setup.md#fortisoar-connector-configuration) | [Playbook Configuration](https://github.com/credibleforce/solution-pack-lacework-forticnapp/blob/develop/docs/setup.md#playbook-configuration) | [First Run Configuration](https://github.com/credibleforce/solution-pack-lacework-forticnapp/blob/develop/docs/setup.md#first-run-configuration) |
 |--------------------------------------------|----------------------------------------------|------------------------|------------------------------|

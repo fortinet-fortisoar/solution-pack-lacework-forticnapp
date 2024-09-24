@@ -14,8 +14,9 @@ The following Connector configurations are required to enable the end-to-end wor
 
 ### AWS Compute Connector 
 
-* **Permissions**: ec2:StopInstances, ec2:StartInstances, ec2:DescribeInstances, ec2:CreateSnapshot, ec2:DescribeVolumes   
-* IAM role example:   
+* **Permissions**: `ec2:StopInstances`, `ec2:StartInstances`, `ec2:DescribeInstances`, `ec2:CreateSnapshot`, `ec2:DescribeVolumes`   
+* IAM role example:
+```json   
   { 
 
  
@@ -23,31 +24,32 @@ The following Connector configurations are required to enable the end-to-end wor
   "Version": "2012-10-17",   
  
 
-  "Statement": \[   
+  "Statement": [   
  
 
-	{ "Action": \["ec2:StopInstances", "ec2:StartInstances", "ec2:DescribeInstances"\], "Effect": "Allow", "Resource": "\*" },   
+	{ "Action": ["ec2:StopInstances", "ec2:StartInstances", "ec2:DescribeInstances"], "Effect": "Allow", "Resource": "*" },   
  
 
-	{ "Action": \["ec2:CreateSnapshot", "ec2:DescribeVolumes"\], "Effect": "Allow", "Resource": "\*" }   
+	{ "Action": ["ec2:CreateSnapshot", "ec2:DescribeVolumes"], "Effect": "Allow", "Resource": "*" }   
  
 
-  \]   
+  ]   
  
 
-}   
+}
+```
  
 
 * **Note**: Connector name must match the AWS account number integrated into Lacework. 
 
 ### Azure Commands Connector 
 
-* **Permissions**: Virtual Machine Contributor, Disk Snapshot Contributor   
+* **Permissions**: `Virtual Machine Contributor`, `Disk Snapshot Contributor `  
 * **Note**: Connector name must match the lower-case Azure subscription name integrated into Lacework. 
 
 ### GCP Compute Connector 
 
-* **Permissions**: roles/backupdr.computeEngineOperator   
+* **Permissions**: `roles/backupdr.computeEngineOperator`  
 * **Note**: Connector name must match the lower-case GCP project name integrated into Lacework. 
 
 ### Lacework FortiCNAPP Connector 
@@ -64,7 +66,7 @@ The following Connector configurations are required to enable the end-to-end wor
 
 ### Lacework FortiCNAPP \> Alerts Webhook 
 
-* **Setup**: Configure a webhook in the Lacework console (e.g., https://\<your-fortisoar-instance\>/api/triggers/v1/deferred/\<unique-GUID\>).   
+* **Setup**: Configure a webhook in the Lacework console (e.g., `https://<your-fortisoar-instance>/api/triggers/v1/deferred/<unique-GUID>`).   
 * **Rule**: Create a new alert rule with Critical and High severity and Composite category.   
 * **FortiSOAR Configuration**: Edit the webhook playbook in FortiSOAR, provide the same GUID, and validate via Lacework. 
 
@@ -79,7 +81,7 @@ Playbooks in the solution pack are *Deactivated* by default, once configuration 
 
 ## Appendix 
 
-### A \- Playbook Workflow Diagram 
+### Playbook Workflow Diagram 
 
 ```mermaid
 flowchart TD

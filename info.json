@@ -3,7 +3,6 @@
     "version": "0.1.0",
     "fsrMinCompatibility": "7.4.0",
     "type": "solutionpack",
-    "local": true,
     "label": "Lacework FortiCNAPP Composite Alerts",
     "dependencies": [
         {

@@ -1,0 +1,2035 @@
+{
+    "@type": "Workflow",
+    "triggerLimit": null,
+    "name": "Lacework FortiCNAPP > Potentially Compromised Host Alert",
+    "aliasName": null,
+    "tag": null,
+    "description": "Incident response playbook with slack approval chain for stop instance and take volume snapshot.",
+    "isActive": false,
+    "debug": false,
+    "singleRecordExecution": false,
+    "remoteExecutableFlag": false,
+    "parameters": [],
+    "synchronous": false,
+    "collection": "\/api\/3\/workflow_collections\/db426f50-e61a-4c76-b7d2-7df39beaf917",
+    "versions": [],
+    "triggerStep": "\/api\/3\/workflow_steps\/d7b24651-b8fa-4b8e-8de0-4cf88b63a0b3",
+    "steps": [
+        {
+            "@type": "WorkflowStep",
+            "name": "Approval Action",
+            "description": null,
+            "arguments": {
+                "type": "InputBased",
+                "input": {
+                    "schema": {
+                        "title": "Alert ID {{ vars.alert_details.alertId }}: {{ vars.alert_details.alertName }}",
+                        "description": "The following {% if vars.aws %}aws{% elif vars.gcp %}gcp{% elif vars.azure %}azure{% endif %} instances were identified as being potentially compromised:\n\n{% if vars.aws %}\n{% for instance in vars.machines %}\n- *Account*: `{{ instance.PROPS.tags.Account }}`\n- *InstanceId*: `{{ instance.PROPS.tags.InstanceId }}`\n- *InstanceName*: `{{ instance.PROPS.tags.Hostname }}`\n\n{% endfor %}\n{% elif vars.gcp %}\n{% for instance in vars.gcp_machines %}\n- *OrganizationId*: `{{ instance.PROPS.tags.OrganizationId }}`\n- *ProjectId*: `{{ instance.PROPS.tags.ProjectId }}`\n- *InstanceName*: `{{ instance.PROPS.tags.InstanceName }}`\n\n{% endfor %}\n{% elif vars.azure %}\n{% for instance in vars.azure_machines %}\n- *TenantId*: `{{ instance.PROPS.tags.TenantId }}`\n- *SubscriptionId*: `{{ instance.PROPS.tags.SubscriptionId }}`\n- *SubscriptionName*: `{{ instance.PROPS.tags.SubscriptionName }}`\n- *InstanceId*: `{{ instance.PROPS.tags.InstanceId }}`\n- *InstanceName*: `{{ instance.PROPS.tags.Hostname }}`\n\n{% endfor %}\n{% endif %}\n\nView Alert in Lacework FortiCNAPP:\nhttps:\/\/{{vars.lacework_account}}.lacework.net\/ui\/investigation\/monitor\/AlertInbox\/{{vars.alert_details.alertId}}\/details?accountName={{vars.lacework_subaccount|upper}}\n\nView Alert in FortiSOAR:\nhttps:\/\/{{globalVars.Server_fqhn}}\/modules\/alerts\/{{vars.input.records[0][\"uuid\"]}}",
+                        "inputVariables": []
+                    }
+                },
+                "record": "{{ vars.input.records[0][\"@id\"] }}",
+                "agent_id": null,
+                "resources": "alerts",
+                "is_approval": false,
+                "owner_detail": {
+                    "isAssigned": false,
+                    "assignedToTeam": [],
+                    "assignedToField": null,
+                    "emailRecipients": "",
+                    "assignedToPerson": [],
+                    "assignedToRecord": false,
+                    "externalRecipients": "jamie.mcmurray@proservlab.com"
+                },
+                "isRecordLinked": true,
+                "step_variables": [],
+                "response_mapping": {
+                    "options": [
+                        {
+                            "option": "Stop Instance",
+                            "primary": false,
+                            "step_iri": "\/api\/3\/workflow_steps\/76e84470-aaff-4216-9106-6d4efd6d46a6"
+                        },
+                        {
+                            "option": "Stop Instance and Take Volume Snapshot",
+                            "step_iri": "\/api\/3\/workflow_steps\/6ee47680-cbf9-458c-846d-b0ae042f4389"
+                        },
+                        {
+                            "option": "Take Volume Snapshot",
+                            "step_iri": "\/api\/3\/workflow_steps\/dd840d1d-f36c-4aee-b7e3-bd68c3af6667"
+                        },
+                        {
+                            "option": "No Action",
+                            "primary": true,
+                            "step_iri": "\/api\/3\/workflow_steps\/e08a3618-e9c4-4bc9-ba77-906cce535b42"
+                        }
+                    ],
+                    "duplicateOption": false,
+                    "customSuccessMessage": "Awaiting Playbook resumed successfully."
+                },
+                "inputExternalUser": false,
+                "email_notification": {
+                    "enabled": false,
+                    "smtpParameters": []
+                },
+                "inputInternalUsers": true,
+                "customEmailExternal": false,
+                "customEmailInternal": false,
+                "inline_channel_list": [
+                    "\/api\/3\/picklists\/afb18b7f-510b-471a-9b9c-7f4646edd4ee"
+                ],
+                "external_channel_list": [],
+                "unauthenticated_input": true,
+                "external_email_subject": "A FortiSOAR playbook is requesting your input",
+                "internal_email_subject": null,
+                "custom_email_body_external": null,
+                "custom_email_body_internal": null,
+                "external_email_attachments": null,
+                "internal_email_attachments": null
+            },
+            "status": null,
+            "top": "180",
+            "left": "980",
+            "stepType": "\/api\/3\/workflow_step_types\/fc04082a-d7dc-4299-96fb-6837b1baa0fe",
+            "group": "\/api\/3\/workflow_groups\/e0a3d548-924c-463e-b9e2-a74ab5df46af",
+            "uuid": "cc17b48d-210d-4bd6-93d8-fb3289e0a3a0"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "AWS Enrichment",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/6d429e9c-d4b3-4740-a1b0-becc51b29ba4",
+                        "condition": "{{ vars.aws == true }}",
+                        "step_name": "Get Instance Details"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/e33302a9-a4e8-4458-bb7b-da6ceaa24d41",
+                        "step_name": "End"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "60",
+            "left": "40",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/e71e4003-4a11-49da-a66c-1b8a91bdc099",
+            "uuid": "0114c7dc-d19b-4ea0-9f58-bc137f3fa60c"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Azure Enrichment",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/531c42d7-406f-4cf2-9611-f9cea6efaddd",
+                        "condition": "{{ vars.azure }}",
+                        "step_name": "Get Azure Instance Details"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/7cc258a8-3c0a-477b-9522-ea98aa831c36",
+                        "step_name": "Skip Azure Enrichment"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "60",
+            "left": "60",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/a5fa5ed2-4537-448d-a8aa-384b5f6260f6",
+            "uuid": "5f840287-a9b9-4b48-9bf6-d7c14d30c7af"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Check AWS Snapshot Action",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/350fe794-821b-4332-a3c4-b7d72e639872",
+                        "condition": "{{ vars.action | regex_search(\"snapshot\") is not none }}",
+                        "step_name": "Take Volume Snapshot"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/41bb455a-cde3-47d8-a63a-4bf190eaeb61",
+                        "step_name": "Skip Snapshot"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "400",
+            "left": "380",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "1ab23e9f-b041-43e7-8303-30fab2803e44"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Check AWS Stop Instance Action",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/a02cbfb8-75a3-4ca4-8166-915d251086ea",
+                        "condition": "{{ vars.action | regex_search(\"stop\") is not none }}",
+                        "step_name": "Stop Instance Action"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/e76ea4e4-2c23-4b13-9cce-86b953401283",
+                        "step_name": "Skip Stop"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "200",
+            "left": "380",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "85240cfd-0c2c-4ebf-b1e3-7c9b11fd38ad"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Check Azure Snapshot Action",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/7ee1ebd4-a885-49b3-b7a4-357b27e038db",
+                        "step_name": "Skip Azure Snapshot"
+                    },
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/24fb23e4-8103-44f6-9e1c-aa7d543433a1",
+                        "condition": "{{ vars.action | regex_search(\"snapshot\") is not none }}",
+                        "step_name": "Take Azure Volume Snapshot"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "261",
+            "left": "337",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "a85ea8f8-ca9e-4866-830d-b81ffbc4eb04"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Check Azure Stop Instance Action",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/566a4f8d-651f-4701-a178-27bdac293e6a",
+                        "condition": "{{ vars.action | regex_search(\"stop\") is not none }}",
+                        "step_name": "Stop Azure Instance Action 2"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/b6503915-6fe9-496b-9584-f25491dff3f6",
+                        "step_name": "Skip Azure Stop"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "61",
+            "left": "337",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "80f336ac-ee72-493f-bc0b-094d94a20038"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Check GCP Snapshot Action",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/baa1c4d6-f511-4365-aef8-29c4fead905e",
+                        "condition": "{{ vars.action | regex_search(\"snapshot\") is not none }}",
+                        "step_name": "Take GCP Volume Snapshot 2"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/6675f9a1-1249-4a74-9f84-818507511a72",
+                        "step_name": "Skip GCP Snapshot"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "298",
+            "left": "359",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "uuid": "ef85712d-7036-4a1e-a1b2-3a225864e410"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Check GCP Stop Instance Action",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/e869ae0c-cb73-42d0-ab0b-e82a31cf393a",
+                        "condition": "{{ vars.action | regex_search(\"stop\") is not none }}",
+                        "step_name": "Stop GCP Instance Action"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/a83fa151-2074-43c0-9c1d-cc3f681633cb",
+                        "step_name": "Skip GCP Stop"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "98",
+            "left": "359",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "uuid": "3c18b10c-2b30-4ad7-80fb-093ba05686bc"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Close Alert",
+            "description": null,
+            "arguments": {
+                "action": "close_alert"
+            },
+            "status": null,
+            "top": "180",
+            "left": "120",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/32420e60-b900-4bad-853e-43cecb25de86",
+            "uuid": "e79af345-633f-4459-af25-f2e475f6e086"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Close Lacework Alert",
+            "description": null,
+            "arguments": {
+                "name": "Lacework FortiCNAPP",
+                "config": "{{ vars.lacework_subaccount }}",
+                "params": {
+                    "reason": "Other",
+                    "alertId": "{{ vars.alert_details.alertId }}",
+                    "comment": "*FortiSOAR*: Closing Alert"
+                },
+                "version": "1.0.0",
+                "connector": "fortinet-forticnapp",
+                "operation": "close_alert",
+                "operationTitle": "Close Alert",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "300",
+            "left": "280",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/32420e60-b900-4bad-853e-43cecb25de86",
+            "uuid": "e4eb8190-7e71-4da9-9741-47b51c5d0ef8"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Format AWS Response",
+            "description": null,
+            "arguments": {
+                "bot_message": "[\n  {\n    \"type\": \"section\",\n    \"text\": {\n      \"type\": \"mrkdwn\",\n      \"text\": \"*Alert ID {{ vars.alert_details.alertId }}*: Action Completed\"\n    }\n  },\n  {\n    \"type\": \"section\",\n    \"text\": {\n      \"type\": \"mrkdwn\",\n      \"text\": \"*Action*: ```{{ vars.action }}```\\n*Stop Instance Result*: {{ vars.bot_stop_instance_message |  replace(\"\\n\", \"\\\\n\") |  replace('\\\\\"', '&ESCAPE;') |  replace('\"', '\\\\\"') | replace('&ESCAPE;', '\\\\\\\"') }}\\n*Snapshot Result*: {{ vars.bot_snapshot_message |  replace(\"\\n\", \"\\\\n\") |  replace('\\\\\"', '&ESCAPE;') |  replace('\"', '\\\\\"') | replace('&ESCAPE;', '\\\\\\\"')  }}\"\n    }\n  }\n]"
+            },
+            "status": null,
+            "top": "640",
+            "left": "240",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "6433799d-fa71-4e98-b08b-fe9d66142036"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Format Azure Response",
+            "description": null,
+            "arguments": {
+                "bot_message": "[\n  {\n    \"type\": \"section\",\n    \"text\": {\n      \"type\": \"mrkdwn\",\n      \"text\": \"*Alert ID {{ vars.alert_details.alertId }}*: Action Completed\"\n    }\n  },\n  {\n    \"type\": \"section\",\n    \"text\": {\n      \"type\": \"mrkdwn\",\n      \"text\": \"*Action*: ```{{ vars.action }}```\\n*Stop Instance Result*: {{ vars.bot_stop_instance_message |  replace(\"\\n\", \"\\\\n\") |  replace('\\\\\"', '&ESCAPE;') |  replace('\"', '\\\\\"') | replace('&ESCAPE;', '\\\\\\\"') }}\\n*Snapshot Result*: {{ vars.bot_snapshot_message |  replace(\"\\n\", \"\\\\n\") |  replace('\\\\\"', '&ESCAPE;') |  replace('\"', '\\\\\"') | replace('&ESCAPE;', '\\\\\\\"')  }}\"\n    }\n  }\n]"
+            },
+            "status": null,
+            "top": "581",
+            "left": "337",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "9fe44bd4-b3e1-428e-94e3-d3908453a9dc"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Format GCP Response",
+            "description": null,
+            "arguments": {
+                "bot_message": "[\n  {\n    \"type\": \"section\",\n    \"text\": {\n      \"type\": \"mrkdwn\",\n      \"text\": \"*Alert ID {{ vars.alert_details.alertId }}*: Action Completed\"\n    }\n  },\n  {\n    \"type\": \"section\",\n    \"text\": {\n      \"type\": \"mrkdwn\",\n      \"text\": \"*Action*: ```{{ vars.action }}```\\n*Stop Instance Result*: {{ vars.bot_stop_instance_message |  replace(\"\\n\", \"\\\\n\") |  replace('\\\\\"', '&ESCAPE;') |  replace('\"', '\\\\\"') | replace('&ESCAPE;', '\\\\\\\"')\u00a0}}\\n*Snapshot Result*: {{ vars.bot_snapshot_message |  replace(\"\\n\", \"\\\\n\") |  replace('\\\\\"', '&ESCAPE;') |  replace('\"', '\\\\\"') | replace('&ESCAPE;', '\\\\\\\"')  }}\"\n    }\n  }\n]"
+            },
+            "status": null,
+            "top": "640",
+            "left": "360",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "uuid": "f0a5b9ab-a427-4999-8b55-11b40aa92fa8"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "GCP Enrichment",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/196ae57a-701f-47c4-b753-7c25dcee418f",
+                        "condition": "{{ vars.gcp == true }}",
+                        "step_name": "Get GCP Instance Details"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/b68a1e49-ae81-4e89-bd4e-20bf0c924430",
+                        "step_name": "Skip GCP Enrichment"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "60",
+            "left": "40",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/372e94c5-3efa-4383-9606-dd4daa5c0e9b",
+            "uuid": "0697d91a-145f-4563-88f2-9f3d45965a7c"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Get AWS Instance Details",
+            "description": null,
+            "arguments": {
+                "name": "AWS EC2",
+                "config": "{{ vars.item.PROPS.tags.Account }}",
+                "params": {
+                    "assume_role": false,
+                    "instance_id": "{{ vars.item.PROPS.tags.InstanceId }}"
+                },
+                "version": "3.1.1",
+                "for_each": {
+                    "item": "{{ vars.machines }}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "aws",
+                "operation": "describe_instance",
+                "operationTitle": "Get Instance Details",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "160",
+            "left": "40",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/e71e4003-4a11-49da-a66c-1b8a91bdc099",
+            "uuid": "6d429e9c-d4b3-4740-a1b0-becc51b29ba4"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Get Azure Instance Details",
+            "description": null,
+            "arguments": {
+                "name": "Azure Commands",
+                "config": "{{ vars.item.PROPS.tags.SubscriptionName }}",
+                "params": {
+                    "command": "vm list",
+                    "optional_parameters": "--query \"[?vmId=='{{vars.item.PROPS.tags.InstanceId}}']\""
+                },
+                "version": "1.0.0",
+                "for_each": {
+                    "item": "{{ vars.azure_machines }}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "azure-commands",
+                "operation": "generic_command",
+                "operationTitle": "Execute Azure Command",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "160",
+            "left": "60",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/a5fa5ed2-4537-448d-a8aa-384b5f6260f6",
+            "uuid": "531c42d7-406f-4cf2-9611-f9cea6efaddd"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Get GCP Instance Details",
+            "description": null,
+            "arguments": {
+                "name": "Google Cloud Compute",
+                "config": "{{ vars.item.PROPS.tags.ProjectId }}",
+                "params": {
+                    "zone": "{{ vars.item.PROPS.tags.Zone }}",
+                    "resource_id": "{{ vars.item.PROPS.tags.InstanceName }}"
+                },
+                "version": "1.2.0",
+                "for_each": {
+                    "item": "{{ vars.gcp_machines }}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "google-cloud-compute",
+                "operation": "describe_instance",
+                "operationTitle": "Get Instance Details",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "160",
+            "left": "40",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/372e94c5-3efa-4383-9606-dd4daa5c0e9b",
+            "uuid": "196ae57a-701f-47c4-b753-7c25dcee418f"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Map Instance to Instance Volumes",
+            "description": "Enumerate all of the discovered instances and create a list of all running instances and their attached volumes.",
+            "arguments": {
+                "instanceVolumes": "{% set results=[] %}\n{% for instance_detail in vars.steps.Get_AWS_Instance_Details %}\n\t{% if (instance_detail.data.Reservations | length) > 0 and instance_detail.data.Reservations[0].Instances[0].State.Name == \"running\" %}\n\t\t{% set volumeIds=[] %}\n\t\t{% for block_device in instance_detail.data.Reservations[0].Instances[0].BlockDeviceMappings %}\n\t\t\t{% if block_device.Ebs.Status == \"attached\" %}\n\t\t\t\t{% if volumeIds.append( instance_detail.data.Reservations[0].OwnerId ~ ':' ~ block_device.Ebs.VolumeId) %}{% endif %}\n\t\t\t{% endif %}\n\t\t{% endfor %}\n\t\t{% if results.append({ \"instanceId\":  instance_detail.data.Reservations[0].Instances[0].InstanceId, \"state\": instance_detail.data.Reservations[0].Instances[0].State.Name, \"volumeIds\" : volumeIds, \"account\" : instance_detail.data.Reservations[0].OwnerId } ) %}{% endif %}\n\t{% endif %}\n{% endfor %}\n{{ results }}"
+            },
+            "status": null,
+            "top": "80",
+            "left": "380",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "e9e6e3ca-bf43-4bbc-a7db-2c8294fe7c74"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "No Action",
+            "description": null,
+            "arguments": {
+                "action": "none",
+                "bot_message": "[\n  {\n    \"type\": \"section\",\n    \"text\": {\n      \"type\": \"mrkdwn\",\n      \"text\": \"*Alert ID {{ vars.alert_details.alertId }}*: Action Completed\"\n    }\n  },\n  {\n    \"type\": \"section\",\n    \"text\": {\n      \"type\": \"mrkdwn\",\n      \"text\": \"*Action*: ```{{ vars.action }}```\\n*Stop Instance Result*: {{ vars.bot_stop_instance_message | replace(\"\\n\", \"\\\\n\") | replace(\"\\\"\", \"\\\\\\\"\") }}\\n*Snapshot Result*: {{ vars.bot_snapshot_message | replace(\"\\n\", \"\\\\n\") | replace(\"\\\"\", \"\\\\\\\"\")  }}\"\n    }\n  }\n]"
+            },
+            "status": null,
+            "top": "360",
+            "left": "1940",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/e0a3d548-924c-463e-b9e2-a74ab5df46af",
+            "uuid": "e08a3618-e9c4-4bc9-ba77-906cce535b42"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "No Action For Alert",
+            "description": null,
+            "arguments": {
+                "action": "none"
+            },
+            "status": null,
+            "top": "180",
+            "left": "460",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/32420e60-b900-4bad-853e-43cecb25de86",
+            "uuid": "988a6662-fa87-4edd-b6d3-a244bc612147"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Payload",
+            "description": null,
+            "arguments": {
+                "payload": "{{ (vars.input.records[0].sourcedata | from_json) }}"
+            },
+            "status": null,
+            "top": "140",
+            "left": "1660",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "3cc4b746-6ed4-4063-9172-b42dc2d95daf"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Prompt to Close Alert",
+            "description": null,
+            "arguments": {
+                "type": "InputBased",
+                "input": {
+                    "schema": {
+                        "title": "Alert ID {{ vars.alert_details.alertId }}: Potentially Compromised AWS Host",
+                        "description": "Actions associated with this alert have completed. Would you like to close the alert?\n\nView Alert in Lacework FortiCNAPP:\nhttps:\/\/{{vars.lacework_account}}.lacework.net\/ui\/investigation\/monitor\/AlertInbox\/{{vars.alert_details.alertId}}\/details?accountName={{vars.lacework_subaccount|upper}}\n\nView Alert in FortiSOAR:\nhttps:\/\/{{globalVars.Server_fqhn}}\/modules\/alerts\/{{vars.input.records[0][\"uuid\"]}}",
+                        "inputVariables": []
+                    }
+                },
+                "record": "{{ vars.input.records[0][\"@id\"] }}",
+                "agent_id": null,
+                "resources": "alerts",
+                "is_approval": false,
+                "owner_detail": {
+                    "isAssigned": false,
+                    "assignedToTeam": [],
+                    "assignedToField": null,
+                    "emailRecipients": "",
+                    "assignedToPerson": [],
+                    "assignedToRecord": false,
+                    "externalRecipients": "jamie.mcmurray@proservlab.com"
+                },
+                "isRecordLinked": true,
+                "step_variables": [],
+                "response_mapping": {
+                    "options": [
+                        {
+                            "option": "Yes",
+                            "step_iri": "\/api\/3\/workflow_steps\/e79af345-633f-4459-af25-f2e475f6e086"
+                        },
+                        {
+                            "option": "No",
+                            "primary": true,
+                            "step_iri": "\/api\/3\/workflow_steps\/988a6662-fa87-4edd-b6d3-a244bc612147"
+                        }
+                    ],
+                    "duplicateOption": false,
+                    "customSuccessMessage": "Awaiting Playbook resumed successfully."
+                },
+                "inputExternalUser": false,
+                "email_notification": {
+                    "enabled": false,
+                    "smtpParameters": []
+                },
+                "inputInternalUsers": true,
+                "customEmailExternal": false,
+                "customEmailInternal": false,
+                "inline_channel_list": [
+                    "\/api\/3\/picklists\/afb18b7f-510b-471a-9b9c-7f4646edd4ee"
+                ],
+                "external_channel_list": [],
+                "unauthenticated_input": true,
+                "external_email_subject": "A FortiSOAR playbook is requesting your input",
+                "internal_email_subject": null,
+                "custom_email_body_external": null,
+                "custom_email_body_internal": null,
+                "external_email_attachments": null,
+                "internal_email_attachments": null
+            },
+            "status": null,
+            "top": "60",
+            "left": "280",
+            "stepType": "\/api\/3\/workflow_step_types\/fc04082a-d7dc-4299-96fb-6837b1baa0fe",
+            "group": "\/api\/3\/workflow_groups\/32420e60-b900-4bad-853e-43cecb25de86",
+            "uuid": "6a4126b6-cec5-4216-a60d-6253d98ea829"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Send Response",
+            "description": null,
+            "arguments": {
+                "name": "Slack",
+                "config": "07eb7f2f-f03b-4407-8a27-b8a6c47a5c13",
+                "params": {
+                    "blocks": "{{ vars.bot_message }}",
+                    "channel": "D07JJDSC4Q7",
+                    "message": "Block Content",
+                    "email_id": "",
+                    "thread_ts": "",
+                    "attachments": []
+                },
+                "version": "3.2.0",
+                "connector": "slack",
+                "operation": "send_message",
+                "operationTitle": "Send Message",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "60",
+            "left": "140",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/09f19f5c-559a-4dfd-b005-da79e4ef6676",
+            "uuid": "8086973a-9e1f-40dc-9e9d-f429c6742496"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Set Bot Message After AWS Instance Stop",
+            "description": null,
+            "arguments": {
+                "bot_stop_instance_message": "```\n{{ vars.steps.Stop_AWS_Instance_Action | to_nice_json(indent=4) }}\n```"
+            },
+            "status": null,
+            "top": "340",
+            "left": "680",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "8eef4a31-4685-46e6-895b-9f528a5ea9f1"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Set Bot Message After AWS Snapshot",
+            "description": null,
+            "arguments": {
+                "bot_snapshot_message": "```\n{{ vars.steps.Take_AWS_Volume_Snapshot | to_nice_json(indent=4) }}\n```"
+            },
+            "status": null,
+            "top": "560",
+            "left": "680",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "937623e9-daea-4475-b9e9-672031fdbfcc"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Set Bot Message After Azure Instance Stop",
+            "description": null,
+            "arguments": {
+                "bot_stop_instance_message": "```\n{{ vars.steps.Stop_Azure_Instance_Action | to_nice_json(indent=4) }}\n```"
+            },
+            "status": null,
+            "top": "221",
+            "left": "657",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "708aacb7-bdbd-4bff-b7e9-38f4789ada37"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Set Bot Message After Azure Snapshot",
+            "description": null,
+            "arguments": {
+                "bot_snapshot_message": "```\n{{ vars.steps.Take_Azure_Volume_Snapshot | to_nice_json(indent=4) }}\n```"
+            },
+            "status": null,
+            "top": "461",
+            "left": "657",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "46af9b84-30ee-4e01-b579-b91fb6526045"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Set Bot Message After GCP Instance Stop",
+            "description": null,
+            "arguments": {
+                "bot_stop_instance_message": "```\n{{ vars.steps.Stop_GCP_Instance_Action | to_nice_json(indent=4) }}\n```"
+            },
+            "status": null,
+            "top": "258",
+            "left": "679",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "uuid": "e702b453-33b4-4f8c-bbc7-7e42b5fc7395"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Set Bot Message After GCP Snapshot",
+            "description": null,
+            "arguments": {
+                "bot_snapshot_message": "```\n{{ vars.steps.Take_GCP_Volume_Snapshot | to_nice_json(indent=4) }}\n```"
+            },
+            "status": null,
+            "top": "498",
+            "left": "679",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "uuid": "83f59eaa-bfbe-4dc9-aa31-8af616122334"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Set Variables from Alert Payload",
+            "description": null,
+            "arguments": {
+                "aws": "{{ vars.payload.instanceIds | length > 0 }}",
+                "gcp": "{{ vars.payload.gcp_instanceIds | length > 0 }}",
+                "azure": "{{ vars.payload.azure_instanceIds | length > 0 }}",
+                "machines": "{{ vars.payload.machines }}",
+                "instanceIds": "{{ vars.payload.instanceIds }}",
+                "gcp_machines": "{{ vars.payload.gcp_machines }}",
+                "alert_details": "{{ vars.payload }}",
+                "azure_machines": "{{ vars.payload.azure_machines }}",
+                "gcp_instanceIds": "{{ vars.payload.gcp_instanceIds }}",
+                "lacework_account": "{{ vars.payload.lacework_account }}",
+                "azure_instanceIds": "{{ vars.payload.azure_instanceIds }}",
+                "lacework_subaccount": "{{ vars.payload.lacework_subaccount | lower }}"
+            },
+            "status": null,
+            "top": "60",
+            "left": "980",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/e0a3d548-924c-463e-b9e2-a74ab5df46af",
+            "uuid": "aa779e39-8ebe-4eb2-aba2-fa9e9312ac65"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Skip AWS Enrichment",
+            "description": null,
+            "arguments": {
+                "end": "true"
+            },
+            "status": null,
+            "top": "60",
+            "left": "360",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/e71e4003-4a11-49da-a66c-1b8a91bdc099",
+            "uuid": "e33302a9-a4e8-4458-bb7b-da6ceaa24d41"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Skip AWS Snapshot",
+            "description": null,
+            "arguments": {
+                "bot_snapshot_message": "No Action Taken"
+            },
+            "status": null,
+            "top": "500",
+            "left": "80",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "41bb455a-cde3-47d8-a63a-4bf190eaeb61"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Skip AWS Stop",
+            "description": null,
+            "arguments": {
+                "bot_stop_instance_message": "No Action Taken"
+            },
+            "status": null,
+            "top": "300",
+            "left": "80",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "e76ea4e4-2c23-4b13-9cce-86b953401283"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Skip Azure Enrichment",
+            "description": null,
+            "arguments": {
+                "end": "true"
+            },
+            "status": null,
+            "top": "60",
+            "left": "360",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/a5fa5ed2-4537-448d-a8aa-384b5f6260f6",
+            "uuid": "7cc258a8-3c0a-477b-9522-ea98aa831c36"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Skip Azure Snapshot",
+            "description": null,
+            "arguments": {
+                "bot_snapshot_message": "No Action Taken"
+            },
+            "status": null,
+            "top": "361",
+            "left": "17",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "7ee1ebd4-a885-49b3-b7a4-357b27e038db"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Skip Azure Stop",
+            "description": null,
+            "arguments": {
+                "bot_stop_instance_message": "No Action Taken"
+            },
+            "status": null,
+            "top": "161",
+            "left": "17",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "b6503915-6fe9-496b-9584-f25491dff3f6"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Skip GCP Enrichment",
+            "description": null,
+            "arguments": {
+                "end": "true"
+            },
+            "status": null,
+            "top": "60",
+            "left": "360",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/372e94c5-3efa-4383-9606-dd4daa5c0e9b",
+            "uuid": "b68a1e49-ae81-4e89-bd4e-20bf0c924430"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Skip GCP Snapshot",
+            "description": null,
+            "arguments": {
+                "bot_snapshot_message": "No Action Taken"
+            },
+            "status": null,
+            "top": "398",
+            "left": "39",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "uuid": "6675f9a1-1249-4a74-9f84-818507511a72"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Skip GCP Stop",
+            "description": null,
+            "arguments": {
+                "bot_stop_instance_message": "No Action Taken"
+            },
+            "status": null,
+            "top": "198",
+            "left": "39",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "uuid": "a83fa151-2074-43c0-9c1d-cc3f681633cb"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Start",
+            "description": null,
+            "arguments": {
+                "resource": "alerts",
+                "resources": [
+                    "alerts"
+                ],
+                "__triggerLimit": true,
+                "step_variables": {
+                    "input": {
+                        "params": [],
+                        "records": [
+                            "{{vars.input.records[0]}}"
+                        ]
+                    }
+                },
+                "triggerOnSource": true,
+                "fieldbasedtrigger": {
+                    "sort": [],
+                    "limit": 30,
+                    "logic": "AND",
+                    "filters": [
+                        {
+                            "type": "primitive",
+                            "field": "source",
+                            "value": "Lacework FortiCNAPP: Potentially Compromised Host",
+                            "operator": "eq",
+                            "_operator": "eq"
+                        }
+                    ]
+                },
+                "triggerOnReplicate": false
+            },
+            "status": null,
+            "top": "40",
+            "left": "1660",
+            "stepType": "\/api\/3\/workflow_step_types\/ea155646-3821-4542-9702-b246da430a8d",
+            "group": null,
+            "uuid": "d7b24651-b8fa-4b8e-8de0-4cf88b63a0b3"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Stop AWS Instance Action",
+            "description": null,
+            "arguments": {
+                "name": "AWS EC2",
+                "config": "{{ vars.item.account }}",
+                "params": {
+                    "assume_role": false,
+                    "instance_id": "{{ vars.item.instanceId }}"
+                },
+                "version": "3.1.1",
+                "for_each": {
+                    "item": "{{ vars.instanceVolumes }}",
+                    "parallel": false,
+                    "condition": "{{vars.item.state == \"running\"}}"
+                },
+                "connector": "aws",
+                "operation": "stop_instance",
+                "operationTitle": "Stop Instance",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "300",
+            "left": "380",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "a02cbfb8-75a3-4ca4-8166-915d251086ea"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Stop Azure Instance Action",
+            "description": null,
+            "arguments": {
+                "name": "Azure Compute",
+                "config": "{{ vars.item.PROPS.tags.SubscriptionId }}",
+                "params": {
+                    "subs_id": "{{ vars.item.PROPS.tags.SubscriptionId }}",
+                    "vm_name": "{{ vars.item.PROPS.tags.InstanceName }}",
+                    "resource_group_name": "{{ vars.item.PROPS.tags.ResourceGroup }}"
+                },
+                "version": "1.2.0",
+                "for_each": {
+                    "item": "{{ vars.azure_machines }}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "azure-compute",
+                "operation": "stop_instance",
+                "operationTitle": "Stop an Instance",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "161",
+            "left": "337",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "566a4f8d-651f-4701-a178-27bdac293e6a"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Stop GCP Instance Action",
+            "description": null,
+            "arguments": {
+                "name": "Google Cloud Compute",
+                "config": "{{ vars.item.PROPS.tags.ProjectId }}",
+                "params": {
+                    "zone": "{{ vars.item.PROPS.tags.Zone }}",
+                    "resource_id": "{{ vars.item.PROPS.tags.InstanceName }}"
+                },
+                "version": "1.2.0",
+                "for_each": {
+                    "item": "{{ vars.gcp_machines }}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "google-cloud-compute",
+                "operation": "stop_instance",
+                "operationTitle": "Stop Instance",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "198",
+            "left": "359",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "uuid": "e869ae0c-cb73-42d0-ab0b-e82a31cf393a"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Stop Instance",
+            "description": null,
+            "arguments": {
+                "action": "stop"
+            },
+            "status": null,
+            "top": "360",
+            "left": "80",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/e0a3d548-924c-463e-b9e2-a74ab5df46af",
+            "uuid": "76e84470-aaff-4216-9106-6d4efd6d46a6"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Stop Instance and Take Forensic Snapshot",
+            "description": null,
+            "arguments": {
+                "action": "stop_snapshot"
+            },
+            "status": null,
+            "top": "360",
+            "left": "680",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/e0a3d548-924c-463e-b9e2-a74ab5df46af",
+            "uuid": "6ee47680-cbf9-458c-846d-b0ae042f4389"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Take AWS Volume Snapshot",
+            "description": null,
+            "arguments": {
+                "name": "AWS EC2",
+                "config": "{{ (vars.item | split(':'))[0] }}",
+                "params": {
+                    "volume_id": "{{ (vars.item | split(':'))[1] }}",
+                    "assume_role": false,
+                    "description": "fortisoar-snapshot-alert-{{ vars.alert_details.alertId }}"
+                },
+                "version": "3.1.1",
+                "for_each": {
+                    "item": "{% set volumes=[] %}{% for instance in vars.instanceVolumes %}{% for volume in instance.volumeIds %}{% if volumes.append(volume) %}{% endif %}{% endfor %}{% endfor %}{{volumes}}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "aws",
+                "operation": "snapshot_volume",
+                "operationTitle": "Capture Volume Snapshot",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "500",
+            "left": "380",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "uuid": "350fe794-821b-4332-a3c4-b7d72e639872"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Take Azure Volume Snapshot",
+            "description": null,
+            "arguments": {
+                "name": "Azure Compute",
+                "config": "{{ vars.item.PROPS.tags.SubscriptionId }}",
+                "params": {
+                    "tags": "",
+                    "tier": "",
+                    "subs_id": "{{ vars.item.PROPS.tags.SubscriptionId }}",
+                    "EdgeZone": "",
+                    "location": "{{ vars.item.PROPS.tags.Zone }}",
+                    "diskSizeGB": "",
+                    "incremental": "",
+                    "createOption": "Copy",
+                    "diskAccessId": "",
+                    "snapshotName": "fortisoar-snapshot",
+                    "sourceUniqueId": "",
+                    "sourceResourceId": "{{ vars.item.PROPS.tags.OSDiskId }}",
+                    "custom_attributes": "",
+                    "logicalSectorSize": "",
+                    "resource_group_name": "{{ vars.item.PROPS.tags.ResourceGroup }}"
+                },
+                "version": "1.2.0",
+                "for_each": {
+                    "item": "{{ vars.azure_machines }}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "azure-compute",
+                "operation": "create_snapshot",
+                "operationTitle": "Create Snapshot",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "361",
+            "left": "337",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "24fb23e4-8103-44f6-9e1c-aa7d543433a1"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Take Forensic Snapshot",
+            "description": null,
+            "arguments": {
+                "action": "snapshot"
+            },
+            "status": null,
+            "top": "360",
+            "left": "1300",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/e0a3d548-924c-463e-b9e2-a74ab5df46af",
+            "uuid": "dd840d1d-f36c-4aee-b7e3-bd68c3af6667"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Take GCP Volume Snapshot",
+            "description": null,
+            "arguments": {
+                "name": "Google Cloud Compute",
+                "config": "{{ vars.item.PROPS.tags.ProjectId }}",
+                "params": {
+                    "zone": "{{ vars.item.PROPS.tags.Zone }}",
+                    "instance_name": "{{ vars.item.PROPS.tags.InstanceName }}"
+                },
+                "version": "1.2.0",
+                "for_each": {
+                    "item": "{{ vars.gcp_machines }}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "google-cloud-compute",
+                "operation": "disk_snapshot",
+                "operationTitle": "Disk Snapshot",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "398",
+            "left": "359",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "uuid": "baa1c4d6-f511-4365-aef8-29c4fead905e"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Update Alert Comments With Action",
+            "description": null,
+            "arguments": {
+                "name": "Lacework FortiCNAPP",
+                "config": "{{ vars.lacework_subaccount }}",
+                "params": {
+                    "alertId": "{{ vars.alert_details.alertId }}",
+                    "comment": "FortiSOAR: Action Requested {{ vars.action }}"
+                },
+                "version": "1.0.0",
+                "connector": "fortinet-forticnapp",
+                "operation": "add_comment_to_alert",
+                "operationTitle": "Add Comment to Alert",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "480",
+            "left": "1000",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/e0a3d548-924c-463e-b9e2-a74ab5df46af",
+            "uuid": "8add5617-f57f-4437-a599-e7f34a6ea6e1"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Update Alert Comments With Result",
+            "description": null,
+            "arguments": {
+                "name": "Lacework FortiCNAPP",
+                "config": "{{ vars.lacework_subaccount }}",
+                "params": {
+                    "alertId": "{{ vars.alert_details.alertId }}",
+                    "comment": "FortiSOAR: Action Complete {{ vars.action }}"
+                },
+                "version": "1.0.0",
+                "connector": "fortinet-forticnapp",
+                "operation": "add_comment_to_alert",
+                "operationTitle": "Add Comment to Alert",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "160",
+            "left": "140",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/09f19f5c-559a-4dfd-b005-da79e4ef6676",
+            "uuid": "de270c03-d4e8-41a1-8b08-0ac4c6421806"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Update Azure Machines With Resource Group",
+            "description": null,
+            "arguments": {
+                "azure_machines": "{% set machines=[] %}\n{% set resourceGroup=[] %}\n{% set osDiskId=[] %}\n{% for machine in vars.azure_machines %}\n{% for instance in vars.steps.Get_Azure_Instance_Details %}\n{% if instance.data[0].vmId == machine.PROPS.tags.InstanceId %}\n{% if resourceGroup.append(instance.data[0].resourceGroup) %}{% endif %}\n{% if osDiskId.append(instance.data[0].storageProfile.osDisk.managedDisk.id) %}{% endif %}\n{% endif %}\n{% endfor %}\n{% set new_tag={'PROPS':{'tags':{'ResourceGroup': resourceGroup[0], 'OSDiskId': osDiskId[0] }}}  %}\n{% if machines.append((machine|combine(new_tag, recursive=True))) %}{%endif%}\n{% endfor %}\n{{ machines }}"
+            },
+            "status": null,
+            "top": "61",
+            "left": "637",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "uuid": "64d289be-0001-4162-8d35-747bd1e65e71"
+        }
+    ],
+    "routes": [
+        {
+            "@type": "WorkflowRoute",
+            "name": "Approval Action -> No Action",
+            "targetStep": "\/api\/3\/workflow_steps\/e08a3618-e9c4-4bc9-ba77-906cce535b42",
+            "sourceStep": "\/api\/3\/workflow_steps\/cc17b48d-210d-4bd6-93d8-fb3289e0a3a0",
+            "label": "No Action",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "75e50a79-4fd3-42d7-8133-576f93f32472"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Approval Action -> Stop Instance",
+            "targetStep": "\/api\/3\/workflow_steps\/76e84470-aaff-4216-9106-6d4efd6d46a6",
+            "sourceStep": "\/api\/3\/workflow_steps\/cc17b48d-210d-4bd6-93d8-fb3289e0a3a0",
+            "label": "Stop Instance",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "ee61bbea-9411-4652-a4d8-d8ca7db4f7a6"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Approval Action -> Stop Instance and Take Forensic Snapshot",
+            "targetStep": "\/api\/3\/workflow_steps\/6ee47680-cbf9-458c-846d-b0ae042f4389",
+            "sourceStep": "\/api\/3\/workflow_steps\/cc17b48d-210d-4bd6-93d8-fb3289e0a3a0",
+            "label": "Stop Instance and Take Volume Snapshot",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "0e40486b-ae9c-4f9a-b744-46edb9090faa"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Approval Action -> Take Forensic Snapshot",
+            "targetStep": "\/api\/3\/workflow_steps\/dd840d1d-f36c-4aee-b7e3-bd68c3af6667",
+            "sourceStep": "\/api\/3\/workflow_steps\/cc17b48d-210d-4bd6-93d8-fb3289e0a3a0",
+            "label": "Take Volume Snapshot",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "bac6cf1a-6b34-4885-a6b0-92cc4c50fa6f"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "AWS Enrichment -> End",
+            "targetStep": "\/api\/3\/workflow_steps\/e33302a9-a4e8-4458-bb7b-da6ceaa24d41",
+            "sourceStep": "\/api\/3\/workflow_steps\/0114c7dc-d19b-4ea0-9f58-bc137f3fa60c",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "a581b70b-8584-458c-8c41-354174b91677"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "AWS Enrichment -> Get Instance Details",
+            "targetStep": "\/api\/3\/workflow_steps\/6d429e9c-d4b3-4740-a1b0-becc51b29ba4",
+            "sourceStep": "\/api\/3\/workflow_steps\/0114c7dc-d19b-4ea0-9f58-bc137f3fa60c",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "84daa2ae-6da4-430d-96ee-56c83ec3b65a"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Azure Enrichment -> Get Azure Virtual Machine Details",
+            "targetStep": "\/api\/3\/workflow_steps\/531c42d7-406f-4cf2-9611-f9cea6efaddd",
+            "sourceStep": "\/api\/3\/workflow_steps\/5f840287-a9b9-4b48-9bf6-d7c14d30c7af",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "5dad4c89-61e3-4765-8c70-d9ca126895a6"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Azure Enrichment -> Skip Azure Enrichment",
+            "targetStep": "\/api\/3\/workflow_steps\/7cc258a8-3c0a-477b-9522-ea98aa831c36",
+            "sourceStep": "\/api\/3\/workflow_steps\/5f840287-a9b9-4b48-9bf6-d7c14d30c7af",
+            "label": "",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "8d0212ef-6350-4379-8c36-f890b00030b1"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check Azure Snapshot Action -> Skip Azure Snapshot",
+            "targetStep": "\/api\/3\/workflow_steps\/7ee1ebd4-a885-49b3-b7a4-357b27e038db",
+            "sourceStep": "\/api\/3\/workflow_steps\/a85ea8f8-ca9e-4866-830d-b81ffbc4eb04",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "70061ff0-0bcd-45d9-b92b-ac95c6690faf"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check Azure Snapshot Action -> Take Azure Volume Snapshot",
+            "targetStep": "\/api\/3\/workflow_steps\/24fb23e4-8103-44f6-9e1c-aa7d543433a1",
+            "sourceStep": "\/api\/3\/workflow_steps\/a85ea8f8-ca9e-4866-830d-b81ffbc4eb04",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "e07dd69b-f4e5-407e-8ee5-2f6215824816"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check Azure Stop Instance Action -> Stop Azure Instance Action 2",
+            "targetStep": "\/api\/3\/workflow_steps\/566a4f8d-651f-4701-a178-27bdac293e6a",
+            "sourceStep": "\/api\/3\/workflow_steps\/80f336ac-ee72-493f-bc0b-094d94a20038",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "42da1fcc-2411-4ba1-82b6-d30c5c5b1603"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check GCP Snapshot Action -> Skip GCP Snapshot",
+            "targetStep": "\/api\/3\/workflow_steps\/6675f9a1-1249-4a74-9f84-818507511a72",
+            "sourceStep": "\/api\/3\/workflow_steps\/ef85712d-7036-4a1e-a1b2-3a225864e410",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "38b9a792-80ab-4c21-b6d5-574835115df2"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check GCP Snapshot Action -> Take GCP Volume Snapshot 2",
+            "targetStep": "\/api\/3\/workflow_steps\/baa1c4d6-f511-4365-aef8-29c4fead905e",
+            "sourceStep": "\/api\/3\/workflow_steps\/ef85712d-7036-4a1e-a1b2-3a225864e410",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "82687e4c-b758-4f54-8e80-841f06df4fc8"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check GCP Stop Instance Action -> Stop GCP Instance 2",
+            "targetStep": "\/api\/3\/workflow_steps\/e869ae0c-cb73-42d0-ab0b-e82a31cf393a",
+            "sourceStep": "\/api\/3\/workflow_steps\/3c18b10c-2b30-4ad7-80fb-093ba05686bc",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "6c73517c-9d1a-4d1e-b71b-f39eb0190758"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check Snapshot Action -> Skip Snapshot",
+            "targetStep": "\/api\/3\/workflow_steps\/41bb455a-cde3-47d8-a63a-4bf190eaeb61",
+            "sourceStep": "\/api\/3\/workflow_steps\/1ab23e9f-b041-43e7-8303-30fab2803e44",
+            "label": "",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "f3974959-0785-4eb2-9686-19e05fbb8ae2"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check Snapshot Action -> Take Volume Snapsho",
+            "targetStep": "\/api\/3\/workflow_steps\/350fe794-821b-4332-a3c4-b7d72e639872",
+            "sourceStep": "\/api\/3\/workflow_steps\/1ab23e9f-b041-43e7-8303-30fab2803e44",
+            "label": "",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "ec1ae974-1b16-439b-8e1c-dc8895cb64d8"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check Stop Instance Action -> Skip",
+            "targetStep": "\/api\/3\/workflow_steps\/e76ea4e4-2c23-4b13-9cce-86b953401283",
+            "sourceStep": "\/api\/3\/workflow_steps\/85240cfd-0c2c-4ebf-b1e3-7c9b11fd38ad",
+            "label": "",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "f9c59bad-3210-4f6c-a759-3575bf463046"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check Stop Instance Action -> Stop Instance Action",
+            "targetStep": "\/api\/3\/workflow_steps\/a02cbfb8-75a3-4ca4-8166-915d251086ea",
+            "sourceStep": "\/api\/3\/workflow_steps\/85240cfd-0c2c-4ebf-b1e3-7c9b11fd38ad",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "91f0d77b-c493-49df-8cc9-7462fc21d743"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Close Alert -> Close Lacework Alert",
+            "targetStep": "\/api\/3\/workflow_steps\/e4eb8190-7e71-4da9-9741-47b51c5d0ef8",
+            "sourceStep": "\/api\/3\/workflow_steps\/e79af345-633f-4459-af25-f2e475f6e086",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "5eedcd8e-00a4-48cd-a514-605065bf0f2f"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Copy of Check Stop Instance Action -> Copy of Skip Stop",
+            "targetStep": "\/api\/3\/workflow_steps\/a83fa151-2074-43c0-9c1d-cc3f681633cb",
+            "sourceStep": "\/api\/3\/workflow_steps\/3c18b10c-2b30-4ad7-80fb-093ba05686bc",
+            "label": "",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "922eb356-9dce-45b9-80b2-928f0d288b30"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Copy of Copy of Check Stop Instance Action -> Copy of Copy of Skip Stop",
+            "targetStep": "\/api\/3\/workflow_steps\/b6503915-6fe9-496b-9584-f25491dff3f6",
+            "sourceStep": "\/api\/3\/workflow_steps\/80f336ac-ee72-493f-bc0b-094d94a20038",
+            "label": "",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "bc679a10-e83a-4596-a049-8f7696331e2b"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Copy of Update Alert Comments With Action -> Prompt to Close Alert",
+            "targetStep": "\/api\/3\/workflow_steps\/6a4126b6-cec5-4216-a60d-6253d98ea829",
+            "sourceStep": "\/api\/3\/workflow_steps\/de270c03-d4e8-41a1-8b08-0ac4c6421806",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "ba2119a2-9ed7-4c42-8faf-ee070d47c9c2"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Format Azure Response -> Send Response",
+            "targetStep": "\/api\/3\/workflow_steps\/8086973a-9e1f-40dc-9e9d-f429c6742496",
+            "sourceStep": "\/api\/3\/workflow_steps\/9fe44bd4-b3e1-428e-94e3-d3908453a9dc",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "4c46b83a-f0ac-4ed7-a34d-7b5c90fd7f43"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Format GCP Response -> Send Response",
+            "targetStep": "\/api\/3\/workflow_steps\/8086973a-9e1f-40dc-9e9d-f429c6742496",
+            "sourceStep": "\/api\/3\/workflow_steps\/f0a5b9ab-a427-4999-8b55-11b40aa92fa8",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "c3f3297e-493f-4cef-af8c-85862ef353fe"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Format Response -> Send Response",
+            "targetStep": "\/api\/3\/workflow_steps\/8086973a-9e1f-40dc-9e9d-f429c6742496",
+            "sourceStep": "\/api\/3\/workflow_steps\/6433799d-fa71-4e98-b08b-fe9d66142036",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "678e6ef1-bc7a-4c6d-ae38-d8ab8ab6a383"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "GCP Enrichment -> Get GCP Instance Details",
+            "targetStep": "\/api\/3\/workflow_steps\/196ae57a-701f-47c4-b753-7c25dcee418f",
+            "sourceStep": "\/api\/3\/workflow_steps\/0697d91a-145f-4563-88f2-9f3d45965a7c",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "8aafdd58-fc0f-4298-a653-6e53011052cb"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "GCP Enrichment -> Skip GCP Enrichment",
+            "targetStep": "\/api\/3\/workflow_steps\/b68a1e49-ae81-4e89-bd4e-20bf0c924430",
+            "sourceStep": "\/api\/3\/workflow_steps\/0697d91a-145f-4563-88f2-9f3d45965a7c",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "2bb27cb6-3c78-4a38-b0e0-bed668c847da"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Get Azure Instance Details -> Update Azure Machines With Resource Group",
+            "targetStep": "\/api\/3\/workflow_steps\/64d289be-0001-4162-8d35-747bd1e65e71",
+            "sourceStep": "\/api\/3\/workflow_steps\/531c42d7-406f-4cf2-9611-f9cea6efaddd",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "4919ec61-5430-4911-9838-aa5c407308ed"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Get GCP Instance Details -> Check GCP Stop Instance Action",
+            "targetStep": "\/api\/3\/workflow_steps\/3c18b10c-2b30-4ad7-80fb-093ba05686bc",
+            "sourceStep": "\/api\/3\/workflow_steps\/196ae57a-701f-47c4-b753-7c25dcee418f",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "592b5b36-5a41-445f-bd84-5557544d20a2"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Get Instance Details -> Set Actionable Instance Volumes",
+            "targetStep": "\/api\/3\/workflow_steps\/e9e6e3ca-bf43-4bbc-a7db-2c8294fe7c74",
+            "sourceStep": "\/api\/3\/workflow_steps\/6d429e9c-d4b3-4740-a1b0-becc51b29ba4",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "790c8843-b0d7-4e22-820c-6140aeb731b5"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "No Action -> Send Response",
+            "targetStep": "\/api\/3\/workflow_steps\/8086973a-9e1f-40dc-9e9d-f429c6742496",
+            "sourceStep": "\/api\/3\/workflow_steps\/e08a3618-e9c4-4bc9-ba77-906cce535b42",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "0dd15250-8e38-4c0a-b22c-b223f0d3a9d1"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Payload -> Set Variable",
+            "targetStep": "\/api\/3\/workflow_steps\/aa779e39-8ebe-4eb2-aba2-fa9e9312ac65",
+            "sourceStep": "\/api\/3\/workflow_steps\/3cc4b746-6ed4-4063-9172-b42dc2d95daf",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "e3297e74-9ad3-4e25-bd2a-570f88971eee"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Prompt to Close Alert -> Close Alert",
+            "targetStep": "\/api\/3\/workflow_steps\/e79af345-633f-4459-af25-f2e475f6e086",
+            "sourceStep": "\/api\/3\/workflow_steps\/6a4126b6-cec5-4216-a60d-6253d98ea829",
+            "label": "Yes",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "01226eb8-525d-4d4c-a551-252665bf8ad9"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Prompt to Close Alert -> No Action For Alert",
+            "targetStep": "\/api\/3\/workflow_steps\/988a6662-fa87-4edd-b6d3-a244bc612147",
+            "sourceStep": "\/api\/3\/workflow_steps\/6a4126b6-cec5-4216-a60d-6253d98ea829",
+            "label": "No",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "0c9c30f9-6169-4f90-9386-6f43e146daa3"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Send Response -> Copy of Update Alert Comments With Action",
+            "targetStep": "\/api\/3\/workflow_steps\/de270c03-d4e8-41a1-8b08-0ac4c6421806",
+            "sourceStep": "\/api\/3\/workflow_steps\/8086973a-9e1f-40dc-9e9d-f429c6742496",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "118ef8e9-82f4-4d0b-93ae-d4880dd20185"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Bot Message After Azure Instance Stop -> Check Azure Snapshot Action",
+            "targetStep": "\/api\/3\/workflow_steps\/a85ea8f8-ca9e-4866-830d-b81ffbc4eb04",
+            "sourceStep": "\/api\/3\/workflow_steps\/708aacb7-bdbd-4bff-b7e9-38f4789ada37",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "e38da2de-985f-437e-a5aa-18d331f54135"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Bot Message After Azure Snapshot -> Format Azure Response",
+            "targetStep": "\/api\/3\/workflow_steps\/9fe44bd4-b3e1-428e-94e3-d3908453a9dc",
+            "sourceStep": "\/api\/3\/workflow_steps\/46af9b84-30ee-4e01-b579-b91fb6526045",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "3bc44582-4561-453a-b937-5625bfd69b40"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Bot Message After GCP Instance Stop -> Check GCP Snapshot Action",
+            "targetStep": "\/api\/3\/workflow_steps\/ef85712d-7036-4a1e-a1b2-3a225864e410",
+            "sourceStep": "\/api\/3\/workflow_steps\/e702b453-33b4-4f8c-bbc7-7e42b5fc7395",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "6385801d-65c0-4ba9-bb23-90290d18b486"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Bot Message After GCP Snapshot -> Format GCP Response",
+            "targetStep": "\/api\/3\/workflow_steps\/f0a5b9ab-a427-4999-8b55-11b40aa92fa8",
+            "sourceStep": "\/api\/3\/workflow_steps\/83f59eaa-bfbe-4dc9-aa31-8af616122334",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "4c5cf462-73da-4cdd-a989-746b266b6925"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Bot Message After Instance Stop -> Check Snapshot Action",
+            "targetStep": "\/api\/3\/workflow_steps\/1ab23e9f-b041-43e7-8303-30fab2803e44",
+            "sourceStep": "\/api\/3\/workflow_steps\/8eef4a31-4685-46e6-895b-9f528a5ea9f1",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "79e82731-51dc-4e9c-8e2f-f74affed12d6"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Bot Message After Snapshot -> Format Response",
+            "targetStep": "\/api\/3\/workflow_steps\/6433799d-fa71-4e98-b08b-fe9d66142036",
+            "sourceStep": "\/api\/3\/workflow_steps\/937623e9-daea-4475-b9e9-672031fdbfcc",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "a60b454f-10fd-4e11-81f5-919e8f11b547"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Variable -> Approval Action",
+            "targetStep": "\/api\/3\/workflow_steps\/cc17b48d-210d-4bd6-93d8-fb3289e0a3a0",
+            "sourceStep": "\/api\/3\/workflow_steps\/aa779e39-8ebe-4eb2-aba2-fa9e9312ac65",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "9ad4850b-d8d3-4152-a913-27cc6582d5ad"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Volume Ids -> Check Stop Instance Action",
+            "targetStep": "\/api\/3\/workflow_steps\/85240cfd-0c2c-4ebf-b1e3-7c9b11fd38ad",
+            "sourceStep": "\/api\/3\/workflow_steps\/e9e6e3ca-bf43-4bbc-a7db-2c8294fe7c74",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "b8cbcf7c-7201-4612-82cd-fdef04bde77f"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Skip Azure Snapshot -> Format Azure Response",
+            "targetStep": "\/api\/3\/workflow_steps\/9fe44bd4-b3e1-428e-94e3-d3908453a9dc",
+            "sourceStep": "\/api\/3\/workflow_steps\/7ee1ebd4-a885-49b3-b7a4-357b27e038db",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "465199f0-04dc-45a1-9228-3d38361dce02"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Skip Azure Stop -> Check Azure Snapshot Action",
+            "targetStep": "\/api\/3\/workflow_steps\/a85ea8f8-ca9e-4866-830d-b81ffbc4eb04",
+            "sourceStep": "\/api\/3\/workflow_steps\/b6503915-6fe9-496b-9584-f25491dff3f6",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "aa425835-2fd8-41fc-9ce5-2d274f5250f3"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Skip GCP Snapshot -> Format GCP Response",
+            "targetStep": "\/api\/3\/workflow_steps\/f0a5b9ab-a427-4999-8b55-11b40aa92fa8",
+            "sourceStep": "\/api\/3\/workflow_steps\/6675f9a1-1249-4a74-9f84-818507511a72",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "bf184428-835f-4df4-a4d5-c12e13544ad0"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Skip GCP Stop -> Check GCP Snapshot Action",
+            "targetStep": "\/api\/3\/workflow_steps\/ef85712d-7036-4a1e-a1b2-3a225864e410",
+            "sourceStep": "\/api\/3\/workflow_steps\/a83fa151-2074-43c0-9c1d-cc3f681633cb",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "1b6ef2b6-a5f4-43ff-a0b7-9ab93695ecdd"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Skip Snapshot -> Format Response",
+            "targetStep": "\/api\/3\/workflow_steps\/6433799d-fa71-4e98-b08b-fe9d66142036",
+            "sourceStep": "\/api\/3\/workflow_steps\/41bb455a-cde3-47d8-a63a-4bf190eaeb61",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "82358851-1cf2-4120-bb7d-298c40e52b0c"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Skip Stop -> Check Snapshot Action",
+            "targetStep": "\/api\/3\/workflow_steps\/1ab23e9f-b041-43e7-8303-30fab2803e44",
+            "sourceStep": "\/api\/3\/workflow_steps\/e76ea4e4-2c23-4b13-9cce-86b953401283",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "60f4b4b0-3e11-4623-b4a9-3b695e96ea65"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Start -> Payload",
+            "targetStep": "\/api\/3\/workflow_steps\/3cc4b746-6ed4-4063-9172-b42dc2d95daf",
+            "sourceStep": "\/api\/3\/workflow_steps\/d7b24651-b8fa-4b8e-8de0-4cf88b63a0b3",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "f28f8b19-80cc-439c-8a87-0d608c31ed3a"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Stop Azure Instance Action 2 -> Set Bot Message After Azure Instance Stop",
+            "targetStep": "\/api\/3\/workflow_steps\/708aacb7-bdbd-4bff-b7e9-38f4789ada37",
+            "sourceStep": "\/api\/3\/workflow_steps\/566a4f8d-651f-4701-a178-27bdac293e6a",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "e54caa28-d796-49a5-bcd2-3bd3cfb3dc91"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Stop GCP Instance Action -> Set Bot Message After GCP Instance Stop",
+            "targetStep": "\/api\/3\/workflow_steps\/e702b453-33b4-4f8c-bbc7-7e42b5fc7395",
+            "sourceStep": "\/api\/3\/workflow_steps\/e869ae0c-cb73-42d0-ab0b-e82a31cf393a",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "b7ea2264-84c1-4b9d-90f7-2911b55e7bd7"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Stop Instance Action -> Set Bot Message After Instance Stop",
+            "targetStep": "\/api\/3\/workflow_steps\/8eef4a31-4685-46e6-895b-9f528a5ea9f1",
+            "sourceStep": "\/api\/3\/workflow_steps\/a02cbfb8-75a3-4ca4-8166-915d251086ea",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "e3b227c7-cd3e-4f4e-ac71-2c5fc5fe6d73"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Stop Instance and Take Forensic Snapshot -> Update Alert Comments With Action",
+            "targetStep": "\/api\/3\/workflow_steps\/8add5617-f57f-4437-a599-e7f34a6ea6e1",
+            "sourceStep": "\/api\/3\/workflow_steps\/6ee47680-cbf9-458c-846d-b0ae042f4389",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "2ec7a52e-191e-47d6-b56f-4702c6e13937"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Stop Instance -> Update Alert Comments With Action",
+            "targetStep": "\/api\/3\/workflow_steps\/8add5617-f57f-4437-a599-e7f34a6ea6e1",
+            "sourceStep": "\/api\/3\/workflow_steps\/76e84470-aaff-4216-9106-6d4efd6d46a6",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "bbd83a3b-7155-476d-8046-14366a7356ee"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Take Azure Volume Snapshot -> Set Bot Message After Azure Snapshot",
+            "targetStep": "\/api\/3\/workflow_steps\/46af9b84-30ee-4e01-b579-b91fb6526045",
+            "sourceStep": "\/api\/3\/workflow_steps\/24fb23e4-8103-44f6-9e1c-aa7d543433a1",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "808c6d9c-8e94-4e64-997c-d1d5476ac192"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Take Forensic Snapshot -> Update Alert Comments With Action",
+            "targetStep": "\/api\/3\/workflow_steps\/8add5617-f57f-4437-a599-e7f34a6ea6e1",
+            "sourceStep": "\/api\/3\/workflow_steps\/dd840d1d-f36c-4aee-b7e3-bd68c3af6667",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "c17ca08c-3be1-4963-88dd-486b69bfc6bd"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Take GCP Volume Snapshot 2 -> Set Bot Message After GCP Snapshot",
+            "targetStep": "\/api\/3\/workflow_steps\/83f59eaa-bfbe-4dc9-aa31-8af616122334",
+            "sourceStep": "\/api\/3\/workflow_steps\/baa1c4d6-f511-4365-aef8-29c4fead905e",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "b63caee9-5daa-4e39-a91c-64a581c8e6dd"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Take Volume Snapshot -> Set Bot Message After Snapshot",
+            "targetStep": "\/api\/3\/workflow_steps\/937623e9-daea-4475-b9e9-672031fdbfcc",
+            "sourceStep": "\/api\/3\/workflow_steps\/350fe794-821b-4332-a3c4-b7d72e639872",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "13ac0d36-7c3b-4df0-ba04-4cfb1ceb20bf"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Update Alert Comments With Action -> AWS Enrichment",
+            "targetStep": "\/api\/3\/workflow_steps\/0114c7dc-d19b-4ea0-9f58-bc137f3fa60c",
+            "sourceStep": "\/api\/3\/workflow_steps\/8add5617-f57f-4437-a599-e7f34a6ea6e1",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "6636afdb-6e52-4bba-96ad-34ca06287f73"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Update Alert Comments With Action -> Azure Enrichment",
+            "targetStep": "\/api\/3\/workflow_steps\/5f840287-a9b9-4b48-9bf6-d7c14d30c7af",
+            "sourceStep": "\/api\/3\/workflow_steps\/8add5617-f57f-4437-a599-e7f34a6ea6e1",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "78d50b51-4f76-4c07-891a-fc32311bd3ac"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Update Alert Comments With Action -> GCP Enrichment",
+            "targetStep": "\/api\/3\/workflow_steps\/0697d91a-145f-4563-88f2-9f3d45965a7c",
+            "sourceStep": "\/api\/3\/workflow_steps\/8add5617-f57f-4437-a599-e7f34a6ea6e1",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "9b917550-fa27-4eda-b2f9-8a335c075847"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Update Azure Machines With Resource Group -> Check Azure Stop Instance Action",
+            "targetStep": "\/api\/3\/workflow_steps\/80f336ac-ee72-493f-bc0b-094d94a20038",
+            "sourceStep": "\/api\/3\/workflow_steps\/64d289be-0001-4162-8d35-747bd1e65e71",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "c9460827-29c6-460d-91fa-5d22869e826c"
+        }
+    ],
+    "groups": [
+        {
+            "@type": "WorkflowGroup",
+            "name": "Lacework Alert Approve Close",
+            "description": "This block is responsible to for requesting an approval to close the Lacework alert in the Lacework console.",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "2320",
+            "left": "1600",
+            "height": "389",
+            "width": "837",
+            "uuid": "32420e60-b900-4bad-853e-43cecb25de86",
+            "recordTags": []
+        },
+        {
+            "@type": "WorkflowGroup",
+            "name": "Lacework Composite Alert Machine Action Approval (Slack)",
+            "description": "This block reads lacework machine related composite alert details (e.g. Potentially Compromised Host) and requests approval for action via slack.",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "240",
+            "left": "680",
+            "height": "587",
+            "width": "2323",
+            "uuid": "e0a3d548-924c-463e-b9e2-a74ab5df46af",
+            "recordTags": []
+        },
+        {
+            "@type": "WorkflowGroup",
+            "name": "Lacework Machine Alert AWS Enrichment",
+            "description": "Pulls machine details from AWS using the instance-id",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "880",
+            "left": "700",
+            "height": "255",
+            "width": "658",
+            "uuid": "e71e4003-4a11-49da-a66c-1b8a91bdc099",
+            "recordTags": []
+        },
+        {
+            "@type": "WorkflowGroup",
+            "name": "Lacework Machine Alert Azure Actions",
+            "description": "This block is responsible for taking the approved action on the identified machine",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "1160",
+            "left": "2500",
+            "height": "669",
+            "width": "1009",
+            "uuid": "62c84c3d-d873-4b38-92fd-10ac88cc8fd0",
+            "recordTags": []
+        },
+        {
+            "@type": "WorkflowGroup",
+            "name": "Lacework Machine Alert Azure Enrichment",
+            "description": "Pulls machine details from Azure using the instance details",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "880",
+            "left": "2660",
+            "height": "248",
+            "width": "640",
+            "uuid": "a5fa5ed2-4537-448d-a8aa-384b5f6260f6",
+            "recordTags": []
+        },
+        {
+            "@type": "WorkflowGroup",
+            "name": "Lacework Machine Alert GCP Actions",
+            "description": "This block is responsible to taking the approved action on the identified machine",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "1160",
+            "left": "1520",
+            "height": "750",
+            "width": "967",
+            "uuid": "39f5f245-9ea4-4d08-8519-8ace4b10fce0",
+            "recordTags": []
+        },
+        {
+            "@type": "WorkflowGroup",
+            "name": "Lacework Machine Alert GCP Enrichment",
+            "description": "Pulls machine details from GCP using the instance name",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "880",
+            "left": "1640",
+            "height": "248",
+            "width": "680",
+            "uuid": "372e94c5-3efa-4383-9606-dd4daa5c0e9b",
+            "recordTags": []
+        },
+        {
+            "@type": "WorkflowGroup",
+            "name": "Lacework Machine Alert Send Action Result (Slack)",
+            "description": "This block is responsible for sending the results of the action taken to slack and updating the Lacework Alert comments in the Lacework console.",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "1980",
+            "left": "1740",
+            "height": "259",
+            "width": "564",
+            "uuid": "09f19f5c-559a-4dfd-b005-da79e4ef6676",
+            "recordTags": []
+        },
+        {
+            "@type": "WorkflowGroup",
+            "name": "Lacework Machine AWS Alert Actions",
+            "description": "This block is responsible for taking approved actions on the identified machines",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "1160",
+            "left": "540",
+            "height": "752",
+            "width": "970",
+            "uuid": "d914c7f0-25a8-47fc-9068-e6045e2285d7",
+            "recordTags": []
+        }
+    ],
+    "priority": "\/api\/3\/picklists\/2b563c61-ae2c-41c0-a85a-c9709585e3f2",
+    "uuid": "e90d0b0a-db68-4ba3-9004-19a18f9b17ca",
+    "owners": [],
+    "isPrivate": false,
+    "deletedAt": null,
+    "recordTags": [
+        "alerts",
+        "Lacework",
+        "response"
+    ]
+}

@@ -1,0 +1,75 @@
+{
+    "name": "laceworkFortiCNAPPCompositeAlerts",
+    "version": "1.0.0",
+    "fsrMinCompatibility": "7.4.0",
+    "type": "solutionpack",
+    "local": true,
+    "label": "Lacework FortiCNAPP Composite Alerts",
+    "featuredTags": [
+        {
+            "color": "#2d87e3",
+            "tag": "preview"
+        }
+    ],
+    "featured": true,
+    "dependencies": [
+        {
+            "name": "sOARFramework",
+            "type": "solutionpack",
+            "label": "SOAR Framework",
+            "minVersion": "2.3.0"
+        }
+    ],
+    "prerequisite": null,
+    "publisher": "Fortinet",
+    "contributor": "Jamie Mcmurray",
+    "description": "This Solution Pack enables end-users to take action on Lacework FortiCNAPP alerts using FortiSOAR. It includes playbooks for both pulling composite alerts from Lacework FortiCNAPP and receiving pushed events via the Lacework alert channel. An enrichment playbook generates FortiSOAR alerts with extracted indicators, leveraging automatic enrichment within FortiSOAR. Additionally, an example Slack ChatOps workflow demonstrates an incident response process for Potentially Compromised Host alerts across AWS, Google Cloud, and Azure.",
+    "help": "https://github.com/fortinet-fortisoar/solution-pack-lacework-forticnapp/blob/release/1.0.0/README.md",
+    "category": [
+        "Cloud Security"
+    ],
+    "supportInfo": null,
+    "iconLarge": "fsr-icon-large.png",
+    "postInstallConfig": null,
+    "recordTags": [
+        "AWS",
+        "Azure",
+        "FortiCNAPP",
+        "Google",
+        "Lacework"
+    ],
+    "date": "2024-09-26T05:08:32+00:00",
+    "contents": {
+        "playbooks": [
+            {
+                "name": "10 - SP - Lacework FortiCNAPP Composite Alerts"
+            }
+        ],
+        "connectors": [
+            {
+                "name": "AWS EC2",
+                "apiName": "aws"
+            },
+            {
+                "name": "Azure Commands",
+                "apiName": "azure-commands"
+            },
+            {
+                "name": "Azure Compute",
+                "apiName": "azure-compute"
+            },
+            {
+                "name": "Google Cloud Compute",
+                "apiName": "google-cloud-compute"
+            },
+            {
+                "name": "Lacework FortiCNAPP",
+                "apiName": "fortinet-forticnapp"
+            },
+            {
+                "name": "Slack",
+                "apiName": "slack"
+            }
+        ]
+    }
+}

@@ -1,0 +1,291 @@
+{
+    "@type": "Workflow",
+    "triggerLimit": null,
+    "name": "Lacework FortiCNAPP > Alerts Webhook",
+    "aliasName": null,
+    "tag": null,
+    "description": "Alert Webhook",
+    "isActive": false,
+    "debug": false,
+    "singleRecordExecution": false,
+    "remoteExecutableFlag": false,
+    "parameters": [],
+    "synchronous": false,
+    "collection": "\/api\/3\/workflow_collections\/db426f50-e61a-4c76-b7d2-7df39beaf917",
+    "versions": [],
+    "triggerStep": "\/api\/3\/workflow_steps\/a7024ee1-caf1-4540-a6ac-01d20dba1c94",
+    "steps": [
+        {
+            "@type": "WorkflowStep",
+            "name": "Configure Event Filters",
+            "description": "Add one or more matching values to filter for. If the payload value (e.g. event_title) is in the array (case sensistive match) the event will be processed. If the array object is empty all types will be matched.",
+            "arguments": {
+                "event_types": "[]",
+                "event_titles": "[\"Potentially Compromised Host\"]",
+                "event_sources": "[]",
+                "alerts_type_map": "{'PotentiallyCompromisedAwsCredentials': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedHost': {{'AlertType'| picklist('Anomalous Activity') }}}",
+                "event_severities": "[]",
+                "alerts_status_map": "{'Open': {{'AlertStatus'| picklist('Open') }},'InProgress': {{'AlertStatus'| picklist('Pending') }}, 'Closed': {{'AlertStatus'| picklist('Closed') }}}",
+                "event_description": "[]",
+                "lacework_accounts": "[]",
+                "alerts_severity_map": "{'Info': {{'Severity'| picklist('Minimal') }}, 'Low': {{'Severity'| picklist('Low') }}, 'Medium': {{'Severity'| picklist('Medium') }}, 'High': {{'Severity'| picklist('High') }}, 'Critical': {{'Severity'| picklist('Critical') }}}"
+            },
+            "status": null,
+            "top": "60",
+            "left": "280",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/34be8029-7a3f-4334-b905-36e072223aed",
+            "uuid": "4d10940c-6d9d-40e1-8ae0-9ee8a9e6e45d"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Create a FortiSOAR alert from Lacework FortiCNAPP alert",
+            "description": null,
+            "arguments": {
+                "arguments": {
+                    "eventDetails": "{{ vars.steps.Get_Alert_Details }}"
+                },
+                "apply_async": false,
+                "step_variables": [],
+                "pass_parent_env": true,
+                "pass_input_record": false,
+                "workflowReference": "\/api\/3\/workflows\/d5c994c4-0b96-4c5c-a794-a266f7727bd4"
+            },
+            "status": null,
+            "top": "800",
+            "left": "1120",
+            "stepType": "\/api\/3\/workflow_step_types\/74932bdc-b8b6-4d24-88c4-1a4dfbc524f3",
+            "group": null,
+            "uuid": "5b677638-8f73-4fee-a96f-6e0283e23fad"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Filter Events",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/6c0f6758-d5c3-491c-8101-0ce4ca84fd9d",
+                        "condition": "{{ (   ((vars.event_types | length > 0) and (vars.payload.event_type in vars.event_types)) or (vars.event_types | length == 0) ) and (   ((vars.event_titles | length > 0) and (vars.payload.event_title in vars.event_titles)) or (vars.event_titles | length == 0) ) and (   ((vars.event_sources | length > 0) and (vars.payload.event_source in vars.event_sources)) or (vars.event_sources | length == 0) ) and (   ((vars.event_severities | length > 0) and (vars.payload.event_severity in vars.event_severities)) or (vars.event_severities | length == 0) ) and (   ((vars.event_descriptions | length > 0) and (vars.payload.event_description in vars.event_descriptions)) or (vars.event_descriptions | length == 0) ) and (   ((vars.lacework_accounts | length > 0) and (vars.payload.lacework_account in vars.lacework_accounts)) or (vars.lacework_accounts | length == 0) ) }}",
+                        "step_name": "Set Lacework Account"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/22c3eeeb-ca50-48ee-a831-2d91918e7437",
+                        "step_name": "No Action"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "220",
+            "left": "280",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/34be8029-7a3f-4334-b905-36e072223aed",
+            "uuid": "caa8ce26-982d-4e00-9b17-d0a8a63043fb"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Get Alert Details",
+            "description": null,
+            "arguments": {
+                "name": "Lacework FortiCNAPP",
+                "config": "{{ vars.item.lacework_account | lower }}",
+                "params": {
+                    "scope": "Details",
+                    "alertId": "{{ vars.item.event_id }}"
+                },
+                "version": "1.0.0",
+                "for_each": {
+                    "item": "{% set events=[] %}{% if events.append(vars.payload) %}{% endif %}{{ events }}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "fortinet-forticnapp",
+                "operation": "get_alert_details",
+                "operationTitle": "Get Alerts Details",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "380",
+            "left": "280",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": "\/api\/3\/workflow_groups\/34be8029-7a3f-4334-b905-36e072223aed",
+            "uuid": "0c057957-e5f0-4df0-97f1-c26cdc4263f2"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Get Event Payload",
+            "description": null,
+            "arguments": {
+                "payload": "{{ vars.input.params.api_body }}"
+            },
+            "status": null,
+            "top": "140",
+            "left": "280",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/34be8029-7a3f-4334-b905-36e072223aed",
+            "uuid": "e731a9be-2a72-46b9-9538-540d94c2d7fe"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "No Action",
+            "description": null,
+            "arguments": {
+                "action": "none"
+            },
+            "status": null,
+            "top": "220",
+            "left": "560",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/34be8029-7a3f-4334-b905-36e072223aed",
+            "uuid": "22c3eeeb-ca50-48ee-a831-2d91918e7437"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Set Lacework Account",
+            "description": null,
+            "arguments": {
+                "lacework_account": "{{ vars.payload.event_link | split(\".\") | first | regex_replace(\"^http[s]*:\/\/\",\"\") }}",
+                "lacework_subaccount": "{{ vars.payload.lacework_account }}"
+            },
+            "status": null,
+            "top": "300",
+            "left": "280",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/34be8029-7a3f-4334-b905-36e072223aed",
+            "uuid": "6c0f6758-d5c3-491c-8101-0ce4ca84fd9d"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Start",
+            "description": null,
+            "arguments": {
+                "route": "deferred\/REPLACE_WITH_RANDOM_GUID",
+                "__triggerLimit": true,
+                "step_variables": {
+                    "input": {
+                        "params": {
+                            "api_body": "{{vars.request.data}}",
+                            "api_params": "{{vars.request.params}}"
+                        }
+                    }
+                },
+                "triggerOnSource": true,
+                "triggerOnReplicate": false,
+                "authentication_methods": [
+                    "anonymous"
+                ]
+            },
+            "status": null,
+            "top": "160",
+            "left": "1120",
+            "stepType": "\/api\/3\/workflow_step_types\/df26c7a2-4166-4ca5-91e5-548e24c01b5f",
+            "group": null,
+            "uuid": "a7024ee1-caf1-4540-a6ac-01d20dba1c94"
+        }
+    ],
+    "routes": [
+        {
+            "@type": "WorkflowRoute",
+            "name": "Configure Event Filters -> Get Event Payload",
+            "targetStep": "\/api\/3\/workflow_steps\/e731a9be-2a72-46b9-9538-540d94c2d7fe",
+            "sourceStep": "\/api\/3\/workflow_steps\/4d10940c-6d9d-40e1-8ae0-9ee8a9e6e45d",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "962c77f5-90e3-4be7-ac20-7e04719808da"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Filter Events -> No Action",
+            "targetStep": "\/api\/3\/workflow_steps\/22c3eeeb-ca50-48ee-a831-2d91918e7437",
+            "sourceStep": "\/api\/3\/workflow_steps\/caa8ce26-982d-4e00-9b17-d0a8a63043fb",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "59f4499b-3323-4512-87be-c7adbd0e04e0"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Filter Events -> Set Lacework Account",
+            "targetStep": "\/api\/3\/workflow_steps\/6c0f6758-d5c3-491c-8101-0ce4ca84fd9d",
+            "sourceStep": "\/api\/3\/workflow_steps\/caa8ce26-982d-4e00-9b17-d0a8a63043fb",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "88a5c6a4-9dfe-45df-8d90-987c8e7628e4"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Get Alert Details -> Create a FortiSOAR alert from Lacework FortiCNAPP alert",
+            "targetStep": "\/api\/3\/workflow_steps\/5b677638-8f73-4fee-a96f-6e0283e23fad",
+            "sourceStep": "\/api\/3\/workflow_steps\/0c057957-e5f0-4df0-97f1-c26cdc4263f2",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "2790c8b2-8936-41ac-b5af-59c523679cfb"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Get Event Payload -> Filter Events",
+            "targetStep": "\/api\/3\/workflow_steps\/caa8ce26-982d-4e00-9b17-d0a8a63043fb",
+            "sourceStep": "\/api\/3\/workflow_steps\/e731a9be-2a72-46b9-9538-540d94c2d7fe",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "0722c151-42a7-4a9c-8136-a4ad7919398c"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Lacework Account -> Get Alert Details",
+            "targetStep": "\/api\/3\/workflow_steps\/0c057957-e5f0-4df0-97f1-c26cdc4263f2",
+            "sourceStep": "\/api\/3\/workflow_steps\/6c0f6758-d5c3-491c-8101-0ce4ca84fd9d",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "afbdc950-55cb-49de-b0d1-6c56d20868e1"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Start -> Configure Event Filters",
+            "targetStep": "\/api\/3\/workflow_steps\/4d10940c-6d9d-40e1-8ae0-9ee8a9e6e45d",
+            "sourceStep": "\/api\/3\/workflow_steps\/a7024ee1-caf1-4540-a6ac-01d20dba1c94",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "faa112ee-cc48-4997-a3aa-756bee95590b"
+        }
+    ],
+    "groups": [
+        {
+            "@type": "WorkflowGroup",
+            "name": "Process Lacework Webhook Event",
+            "description": "This reference block takes input from the result of a lacework webook event notification and retrieve the event details",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "280",
+            "left": "840",
+            "height": "463",
+            "width": "840",
+            "uuid": "34be8029-7a3f-4334-b905-36e072223aed",
+            "recordTags": []
+        }
+    ],
+    "priority": "\/api\/3\/picklists\/2b563c61-ae2c-41c0-a85a-c9709585e3f2",
+    "uuid": "19b5d9fd-0fa8-4231-a7e8-3ecf937a9874",
+    "owners": [],
+    "isPrivate": false,
+    "deletedAt": null,
+    "recordTags": [
+        "create",
+        "dataingestion",
+        "Lacework",
+        "webook"
+    ]
+}

@@ -1,14 +1,23 @@
-# Lacework FortiCNAPP Solution Pack Guide 
+|[Home](../README.md) |
+|--------------------------------------------|
 
-**Version**: 0.1.0 (Beta) 
+# Installation
 
-**Date**: 2024.09.24 
+1. To install a solution pack, click **Content Hub** > **Discover**.
+2. From the list of solution packs that appear, search **Lacework FortiCNAPP Composite Alerts**.
+3. Click the **Lacework FortiCNAPP Composite Alerts** solution pack card.
+4. Click **Install** on the lower part of the screen to begin the installation.
 
-## Overview  
+## Prerequisites
+The **Lacework FortiCNAPP Composite Alerts** solution pack depends on the following solution packs. These solution packs are installed automatically &ndash; if not already installed.
 
-The **Lacework FortiCNAPP Solution Pack** for FortiSOAR demonstrates an incident response flow for the "Potentially Compromised Host" composite alert. Alerts are either pulled or pushed (via webhook) into FortiSOAR, creating a local alert. Once the alert is created, IP, Domain, and FileHash indicators are enriched using configured sources (e.g., Fortinet FortiGuard Threat Intelligence connector). The incident response playbook is then triggered, prompting the user to select one of four actions: Stop Instance, Stop Instance & Snapshot, Take Snapshot, or No Action. FortiSOAR uses the appropriate cloud connector to execute the selected action and notifies the user upon completion, with a prompt to close the alert in the Lacework FortiCNAPP console. 
+| Name                     | Type          | Version           | Purpose                                |
+|:-------------------------|:--------------|:------------------|:---------------------------------------|
+| SOAR Framework           | Solution Pack | v2.3.0 and later  | Required for Incident Response modules |
 
-## FortiSOAR Connector Configuration 
+# Configuration
+
+## Install and Configure Connectors
 
 The following Connector configurations are required to enable the end-to-end workflows provided by this solution pack. In cases where all three cloud providers (i.e. AWS, GCP, Azure) are not present at least one cloud provider connector is required.  
 
@@ -18,24 +27,11 @@ The following Connector configurations are required to enable the end-to-end wor
 * IAM role example:
 ```json   
   { 
-
- 
-
   "Version": "2012-10-17",   
- 
-
   "Statement": [   
- 
-
 	{ "Action": ["ec2:StopInstances", "ec2:StartInstances", "ec2:DescribeInstances"], "Effect": "Allow", "Resource": "*" },   
- 
-
-	{ "Action": ["ec2:CreateSnapshot", "ec2:DescribeVolumes"], "Effect": "Allow", "Resource": "*" }   
- 
-
+	{ "Action": ["ec2:CreateSnapshot", "ec2:DescribeVolumes"], "Effect": "Allow", "Resource": "*" } 
   ]   
- 
-
 }
 ```
  

@@ -4,12 +4,12 @@
 # Installation
 
 1. To install a solution pack, click **Content Hub** > **Discover**.
-2. From the list of solution pack that appears, search for and select **Lacework FortiCNAPP Composite Alerts**.
-3. Click the **Lacework FortiCNAPP Composite Alerts** solution pack card.
+2. From the list of solution pack that appears, search for and select **Lacework FortiCNAPP Composite Alert Incident Response**.
+3. Click the **Lacework FortiCNAPP Composite Alert Incident Response** solution pack card.
 4. Click **Install** on the lower part of the screen to begin the installation.
 
 ## Prerequisites
-The **Lacework FortiCNAPP Composite Alerts** solution pack depends on the following solution packs that are installed automatically &ndash; if not already installed.
+The **Lacework FortiCNAPP Composite Alert Incident Response** solution pack depends on the following solution packs that are installed automatically &ndash; if not already installed.
 | Solution Pack Name | Version | Purpose |
 | :--------------------- | :---------------------| :--------------------------------------- |
 | SOAR Framework |  |  |
@@ -17,7 +17,7 @@ The **Lacework FortiCNAPP Composite Alerts** solution pack depends on the follow
 
 
 # Configuration
-For optimal performance of **Lacework FortiCNAPP Composite Alerts** solution pack, you can install and configure the connectors that help with the following:
+For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Response** solution pack, you can install and configure the connectors that help with the following:
 
 * **AWS EC2** - Amazon Elastic Compute Cloud (Amazon EC2) provides scalable computing capacity in the Amazon Web Services (AWS) cloud. You can use Amazon EC2 to launch as many or as few virtual servers as you need, configure security and networking, and manage storage.. To configure and use the AWS EC2 connector, refer to [Configuring AWS EC2](https://docs.fortinet.com/fortisoar/connectors/aws-ec2)
     * **Permissions**: `ec2:StopInstances`, `ec2:StartInstances`, `ec2:DescribeInstances`, `ec2:CreateSnapshot`, `ec2:DescribeVolumes`   

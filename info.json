@@ -13,6 +13,12 @@
             "minVersion": "2.3.0"
         }
     ],
+    "featuredTags": [
+        {
+            "color": "#2d87e3",
+            "tag": "preview"
+        }
+    ],
     "prerequisite": null,
     "publisher": "Fortinet",
     "contributor": "Jamie Mcmurray",
@@ -35,7 +41,7 @@
     "contents": {
         "playbooks": [
             {
-                "name": "10 - SP - Lacework FortiCNAPP Composite Alerts"
+                "name": "10 - SP - Lacework FortiCNAPP Composite Alert Incident Response"
             }
         ],
         "connectors": [

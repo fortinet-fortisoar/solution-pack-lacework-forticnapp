@@ -5,7 +5,7 @@
     "aliasName": null,
     "tag": "#lacework #fetch #dataingestion",
     "description": "Fetches Potentially Compromised Host Alerts from Lacework and Creates records in FortiSOAR.",
-    "isActive": false,
+    "isActive": true,
     "debug": false,
     "singleRecordExecution": false,
     "remoteExecutableFlag": false,

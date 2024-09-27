@@ -5,7 +5,7 @@
     "aliasName": null,
     "tag": null,
     "description": "Incident response playbook with slack approval chain for stop instance and take volume snapshot.",
-    "isActive": false,
+    "isActive": true,
     "debug": false,
     "singleRecordExecution": false,
     "remoteExecutableFlag": false,

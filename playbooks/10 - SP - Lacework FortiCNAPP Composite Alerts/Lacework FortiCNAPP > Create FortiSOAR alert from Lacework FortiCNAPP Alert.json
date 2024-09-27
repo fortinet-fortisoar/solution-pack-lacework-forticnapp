@@ -5,7 +5,7 @@
     "aliasName": null,
     "tag": null,
     "description": "Creates a FortiSOAR alert from a Lacework FortiCNAPP alert",
-    "isActive": false,
+    "isActive": true,
     "debug": false,
     "singleRecordExecution": false,
     "remoteExecutableFlag": false,

@@ -1,17 +1,10 @@
 {
-    "name": "laceworkFortiCNAPPCompositeAlerts",
+    "name": "laceworkFortiCNAPPCompositeAlertIncidentResponse",
     "version": "1.0.0",
     "fsrMinCompatibility": "7.4.0",
     "type": "solutionpack",
     "local": true,
-    "label": "Lacework FortiCNAPP Composite Alerts",
-    "featuredTags": [
-        {
-            "color": "#2d87e3",
-            "tag": "preview"
-        }
-    ],
-    "featured": true,
+    "label": "Lacework FortiCNAPP Composite Alert Incident Response",
     "dependencies": [
         {
             "name": "sOARFramework",

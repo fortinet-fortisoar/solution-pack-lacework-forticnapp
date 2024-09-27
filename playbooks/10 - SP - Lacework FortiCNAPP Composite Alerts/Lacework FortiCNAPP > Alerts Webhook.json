@@ -5,7 +5,7 @@
     "aliasName": null,
     "tag": null,
     "description": "Alert Webhook",
-    "isActive": false,
+    "isActive": true,
     "debug": false,
     "singleRecordExecution": false,
     "remoteExecutableFlag": false,

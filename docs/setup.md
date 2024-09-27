@@ -12,7 +12,7 @@
 The **Lacework FortiCNAPP Composite Alert Incident Response** solution pack depends on the following solution packs that are installed automatically &ndash; if not already installed.
 | Solution Pack Name | Version | Purpose |
 | :--------------------- | :---------------------| :--------------------------------------- |
-| SOAR Framework |  |  |
+| SOAR Framework | v2.0.0 and later | Required for Incident Response modules                   |
 
 
 

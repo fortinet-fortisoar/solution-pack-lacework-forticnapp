@@ -3,7 +3,7 @@
 
   # Contents
 
-The **Lacework FortiCNAPP Composite Alerts** solution pack contains the following resources.
+The **Lacework FortiCNAPP Composite Alert Incident Response** solution pack contains the following resources.
 
 ## Connector
 
@@ -19,7 +19,7 @@ The **Lacework FortiCNAPP Composite Alerts** solution pack contains the followin
 
 ## Playbook Collection
 
-| 10 - SP - Lacework FortiCNAPP Composite Alerts |
+| 10 - SP - Lacework FortiCNAPP Composite Alert Incident Response |
 |:------------:|
 
 | Playbook Name | Description |

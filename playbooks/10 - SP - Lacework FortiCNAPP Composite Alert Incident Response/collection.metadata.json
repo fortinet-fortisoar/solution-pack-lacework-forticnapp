@@ -1,7 +1,7 @@
 {
     "@context": "\/api\/3\/contexts\/WorkflowCollection",
     "@type": "WorkflowCollection",
-    "name": "10 - SP - Lacework FortiCNAPP Composite Alerts",
+    "name": "10 - SP - Lacework FortiCNAPP Composite Alert Incident Response",
     "description": "Lacework FortiCNAPP Solution Pack for Potentially Compromised Host Alerts",
     "visible": true,
     "image": null,

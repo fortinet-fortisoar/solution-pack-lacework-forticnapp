@@ -39,7 +39,7 @@
                     "emailRecipients": "",
                     "assignedToPerson": [],
                     "assignedToRecord": false,
-                    "externalRecipients": "jamie.mcmurray@proservlab.com"
+                    "externalRecipients": "<A VALID SLACK EMAIL ADDRESS>"
                 },
                 "isRecordLinked": true,
                 "step_variables": [],
@@ -2029,6 +2029,7 @@
     "deletedAt": null,
     "recordTags": [
         "alerts",
+        "FortiCNAPP",
         "Lacework",
         "response"
     ]

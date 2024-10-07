@@ -39,11 +39,11 @@
         },
         {
             "@type": "WorkflowStep",
-            "name": "Create a FortiSOAR alert from Lacework FortiCNAPP alert",
+            "name": "Create FortiSOAR Alert",
             "description": null,
             "arguments": {
                 "arguments": {
-                    "eventDetails": "{{ vars.steps.Get_Alert_Details }}"
+                    "eventDetails": "{{ vars.eventDetails }}"
                 },
                 "apply_async": false,
                 "step_variables": [],
@@ -52,11 +52,11 @@
                 "workflowReference": "\/api\/3\/workflows\/d5c994c4-0b96-4c5c-a794-a266f7727bd4"
             },
             "status": null,
-            "top": "800",
+            "top": "880",
             "left": "1120",
             "stepType": "\/api\/3\/workflow_step_types\/74932bdc-b8b6-4d24-88c4-1a4dfbc524f3",
             "group": null,
-            "uuid": "5b677638-8f73-4fee-a96f-6e0283e23fad"
+            "uuid": "1e1202c8-3e24-4c5c-9a89-bf393489e1ff"
         },
         {
             "@type": "WorkflowStep",
@@ -144,6 +144,20 @@
         },
         {
             "@type": "WorkflowStep",
+            "name": "Set Event Details",
+            "description": null,
+            "arguments": {
+                "eventDetails": "{{ vars.steps.Get_Alert_Details }}"
+            },
+            "status": null,
+            "top": "460",
+            "left": "280",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/34be8029-7a3f-4334-b905-36e072223aed",
+            "uuid": "7a51cd55-9e43-4496-a928-c2d622b151d1"
+        },
+        {
+            "@type": "WorkflowStep",
             "name": "Set Lacework Account",
             "description": null,
             "arguments": {
@@ -162,7 +176,7 @@
             "name": "Start",
             "description": null,
             "arguments": {
-                "route": "deferred\/REPLACE_WITH_RANDOM_GUID",
+                "route": "lacework_forticnapp_composite",
                 "__triggerLimit": true,
                 "step_variables": {
                     "input": {
@@ -175,7 +189,7 @@
                 "triggerOnSource": true,
                 "triggerOnReplicate": false,
                 "authentication_methods": [
-                    "anonymous"
+                    ""
                 ]
             },
             "status": null,
@@ -219,13 +233,13 @@
         },
         {
             "@type": "WorkflowRoute",
-            "name": "Get Alert Details -> Create a FortiSOAR alert from Lacework FortiCNAPP alert",
-            "targetStep": "\/api\/3\/workflow_steps\/5b677638-8f73-4fee-a96f-6e0283e23fad",
+            "name": "Get Alert Details -> Set Event Details",
+            "targetStep": "\/api\/3\/workflow_steps\/7a51cd55-9e43-4496-a928-c2d622b151d1",
             "sourceStep": "\/api\/3\/workflow_steps\/0c057957-e5f0-4df0-97f1-c26cdc4263f2",
             "label": null,
             "isExecuted": false,
             "group": null,
-            "uuid": "2790c8b2-8936-41ac-b5af-59c523679cfb"
+            "uuid": "a05ed70e-8315-4f23-b9fd-0df01192c6da"
         },
         {
             "@type": "WorkflowRoute",
@@ -236,6 +250,16 @@
             "isExecuted": false,
             "group": null,
             "uuid": "0722c151-42a7-4a9c-8136-a4ad7919398c"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Set Event Details -> Create FortiSOAR Alert",
+            "targetStep": "\/api\/3\/workflow_steps\/1e1202c8-3e24-4c5c-9a89-bf393489e1ff",
+            "sourceStep": "\/api\/3\/workflow_steps\/7a51cd55-9e43-4496-a928-c2d622b151d1",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "af46e482-640a-43fc-bcb4-f0609513b256"
         },
         {
             "@type": "WorkflowRoute",
@@ -255,7 +279,7 @@
             "label": null,
             "isExecuted": false,
             "group": null,
-            "uuid": "faa112ee-cc48-4997-a3aa-756bee95590b"
+            "uuid": "fd1aecde-60f4-43f4-a431-92d8031966ae"
         }
     ],
     "groups": [
@@ -271,8 +295,8 @@
             "reusable": false,
             "top": "280",
             "left": "840",
-            "height": "463",
-            "width": "840",
+            "height": "538",
+            "width": "841",
             "uuid": "34be8029-7a3f-4334-b905-36e072223aed",
             "recordTags": []
         }
@@ -285,6 +309,7 @@
     "recordTags": [
         "create",
         "dataingestion",
+        "FortiCNAPP",
         "Lacework",
         "webook"
     ]

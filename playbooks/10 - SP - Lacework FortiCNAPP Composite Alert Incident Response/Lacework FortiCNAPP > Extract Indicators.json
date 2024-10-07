@@ -590,6 +590,8 @@
     "deletedAt": null,
     "recordTags": [
         "Alert",
+        "FortiCNAPP",
+        "Lacework",
         "PostCreate"
     ]
 }

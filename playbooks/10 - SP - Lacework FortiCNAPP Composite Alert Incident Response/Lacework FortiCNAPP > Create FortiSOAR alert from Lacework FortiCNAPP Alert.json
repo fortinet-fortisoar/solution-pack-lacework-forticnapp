@@ -321,7 +321,7 @@
                 "azure_machines": "{% set hosts=[] %}{% for host in vars.item.data.data.alertInfo.subject[:-1].split(\"Hosts:\")[1].split(\";\")[0].split(\",\") %}{% if hosts.append(host.strip()) %}{% endif %}{% endfor %}\n{% set instanceIds = [] %}\n{% set machines = [] %}\n{% for machine in vars.item.data.data.entityMap.Machine %}{% if machine.PROPS.tags.Hostname in hosts and \"tags\" in machine.PROPS and machine.PROPS.tags.VmProvider == \"Microsoft.Compute\" and \"InstanceId\" in machine.PROPS.tags and \"SubscriptionId\" in machine.PROPS.tags and \"Zone\" in machine.PROPS.tags and machine.PROPS.tags.InstanceId not in instanceIds %}{% if machines.append(machine) %}{% endif %}{% if instanceIds.append(machine.PROPS.tags.InstanceId) %}{% endif %}{% endif %}{% endfor %}{{ machines | unique }}",
                 "gcp_instanceIds": "{% set hosts=[] %}{% for host in vars.item.data.data.alertInfo.subject[:-1].split(\"Hosts:\")[1].split(\";\")[0].split(\",\") %}{% if hosts.append(host.strip()) %}{% endif %}{% endfor %}\n{% set instanceIds = [] %}\n{% set machines = [] %}\n{% for machine in vars.item.data.data.entityMap.Machine %}{% if machine.PROPS.tags.Hostname in hosts and \"tags\" in machine.PROPS and machine.PROPS.tags.VmProvider == \"GCE\" and \"InstanceId\" in machine.PROPS.tags and \"ProjectId\" in machine.PROPS.tags and \"Zone\" in machine.PROPS.tags and machine.PROPS.tags.InstanceName not in instanceIds %}{% if machines.append(machine) %}{% endif %}{% if instanceIds.append(machine.PROPS.tags.InstanceName) %}{% endif %}{% endif %}{% endfor %}{{ instanceIds | unique }}",
                 "vulnerabilities": "{%- set matches=[] %}\n{%- for fact in vars.item.data.data.alertInfo.supportingFacts %}\n  {%- for indicator in fact.subElements %}\n      {%- for sub in indicator.subElements %}\n        {%- if 'Host(s) from this alert have the following vulnerabilities which have a high EPSS score indicating a likelihood of exploitation.' in sub.supportingFactText %}\n          {%- for sub_fact in sub.subElements %}\n            {%- if matches.append(sub_fact.supportingFactText) %}{% endif %}\n          {%- endfor %} \n        {%- endif %}\n      {%- endfor %} \n  {%- endfor %}                           \n{%- endfor %}\n{{ matches | unique }}",
-                "file256hash_iocs": "{%- set matches=[] %}\n{%- for fact in vars.item.data.data.entityMap.FileExePath %}\n  {%- if matches.append(fact.PROPS.last_filedata_hash) %}{% endif %}\n{%- endfor %}{{ matches | unique }}",
+                "file256hash_iocs": "{%- set matches=[] %}\n{%- for fact in vars.item.data.data.entityMap.FileExePath %}\n  \t{%- if fact.PROPS.last_filedata_hash is defined %}\n\t\t{%- if matches.append(fact.PROPS.last_filedata_hash) %}{% endif %}\n   \t{%- endif %}\n{%- endfor %}{{ matches | unique }}",
                 "internetExposure": "{{ vars.item.data.data.internetExposure }}",
                 "lacework_account": "{{ vars.lacework_account }}",
                 "mitre_techniques": "{%- set matches=[] %}\n{%- for technique in vars.item.data.data.tagMetadata %}\n  {%- if matches.append(technique.tagMetadata.customerFacingId) %}{% endif %}\n{%- endfor %}{{ matches | unique }}",
@@ -512,7 +512,7 @@
             "label": null,
             "isExecuted": false,
             "group": null,
-            "uuid": "1d57fa8e-e3b2-4d21-8899-9a6bdfbb81a5"
+            "uuid": "8970af43-504b-4d51-8268-81131dd84db1"
         },
         {
             "@type": "WorkflowRoute",
@@ -549,5 +549,9 @@
     "owners": [],
     "isPrivate": false,
     "deletedAt": null,
-    "recordTags": []
+    "recordTags": [
+        "alerts",
+        "FortiCNAPP",
+        "Lacework"
+    ]
 }

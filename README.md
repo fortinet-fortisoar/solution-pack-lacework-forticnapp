@@ -1,6 +1,6 @@
 # Release Information 
 
-- **Version**:  1.0.0![](./docs/res/icon-preview.svg)
+- **Version**:  2.0.0![](./docs/res/icon-preview.svg)
 - **Certified**: No
 - **Publisher**: Fortinet 
 - **Contributor**: Jamie Mcmurray 

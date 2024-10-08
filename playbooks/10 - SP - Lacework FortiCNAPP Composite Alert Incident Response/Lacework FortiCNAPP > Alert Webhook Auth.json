@@ -21,7 +21,7 @@
             "description": null,
             "arguments": {
                 "params": {
-                    "url": "https:\/\/{{globalVars.Server_fqhn}}\/api\/triggers\/1\/0a0ecd6b-18be-4edf-b8fa-be97ab5a8756",
+                    "url": "https:\/\/{{globalVars.Server_fqhn}}\/api\/triggers\/1\/lacework_forticnapp_composite",
                     "body": "{{ vars.input.params.api_body }}",
                     "method": "POST",
                     "params": "",

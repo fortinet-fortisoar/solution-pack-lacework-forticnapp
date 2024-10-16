@@ -23,28 +23,56 @@ For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Respon
     * **Permissions**: `ec2:StopInstances`, `ec2:StartInstances`, `ec2:DescribeInstances`, `ec2:CreateSnapshot`, `ec2:DescribeVolumes`   
     * IAM role example:
         ```json   
-        {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Action": [
-                        "ec2:StopInstances",
-                        "ec2:StartInstances",
-                        "ec2:DescribeInstances"
-                    ],
-                    "Effect": "Allow",
-                    "Resource": "*"
-                },
-                {
-                    "Action": [
-                        "ec2:CreateSnapshot",
-                        "ec2:DescribeVolumes"
-                    ],
-                    "Effect": "Allow",
-                    "Resource": "*"
-                }
-            ]
-        }
+            {
+                "Statement": [
+                    {
+                        "Action": [
+                            "ec2:StopInstances",
+                            "ec2:StartInstances",
+                            "ec2:DescribeInstances"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "AllowInstanceStartAndStop"
+                    },
+                    {
+                        "Action": [
+                            "ec2:DescribeSecurityGroups",
+                            "ec2:DescribeSecurityGroupReferences",
+                            "ec2:DescribeStaleSecurityGroups",
+                            "ec2:DescribeSecurityGroupRules"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "AllowDescribeSecurityGroups"
+                    },
+                    {
+                        "Action": [
+                            "ec2:AuthorizeSecurityGroupEgress",
+                            "ec2:AuthorizeSecurityGroupIngress",
+                            "ec2:RevokeSecurityGroupEgress",
+                            "ec2:RevokeSecurityGroupIngress",
+                            "ec2:DeleteSecurityGroup",
+                            "ec2:CreateSecurityGroup",
+                            "ec2:ModifySecurityGroupRules",
+                            "ec2:ModifyInstanceAttribute"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "ModifySecurityGroups"
+                    },
+                    {
+                        "Action": [
+                            "ec2:CreateSnapshot",
+                            "ec2:DescribeVolumes"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "AllowCreateSnapshot"
+                    }
+                ],
+                "Version": "2012-10-17"
+            }
         ```
 
     * **Note**: Connector name must match the AWS account number integrated into Lacework. 

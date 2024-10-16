@@ -29,6 +29,11 @@
                     "instance_id": "{{ vars.item.data.Reservations[0].Instances[0].InstanceId }}"
                 },
                 "version": "3.1.1",
+                "for_each": {
+                    "item": "{{ vars.steps.Get_AWS_Instance_Details }}",
+                    "parallel": false,
+                    "condition": ""
+                },
                 "connector": "aws",
                 "operation": "add_tag_to_instance",
                 "operationTitle": "Add Instance Tag",
@@ -56,6 +61,11 @@
                     "instance_id": "{{ vars.item.data.Reservations[0].Instances[0].InstanceId }}"
                 },
                 "version": "3.1.1",
+                "for_each": {
+                    "item": "{{ vars.steps.Get_AWS_Instance_Details }}",
+                    "parallel": false,
+                    "condition": ""
+                },
                 "connector": "aws",
                 "operation": "add_tag_to_instance",
                 "operationTitle": "Add Instance Tag",

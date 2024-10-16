@@ -61,6 +61,10 @@
             {
                 "name": "Slack",
                 "apiName": "slack"
+            },
+            {
+                "name": "Microsoft Team",
+                "apiName": "microsoft-teams"
             }
         ]
     }

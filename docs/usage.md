@@ -21,6 +21,12 @@
 * **Setup**: Configure a webhook in the Lacework console (e.g., `https://<your-fortisoar-instance>/api/triggers/v1/deferred/lacework_forticnapp_composite?api_token=<FORTISOAR API TOKEN>`).   
 * **Rule**: Create a new alert rule with Critical and High severity and Composite category.
 
+### Lacework FortiCNAPP \> Potentially Compromised Host Alert
+
+* **Setup**: This playbook is repsonsible for starting chatops workflows in Teams/Slack. You'll need to have first configured the [FortiSOAR For Slack Application](https://docs.fortinet.com/document/fortisoar/1.0.0/fortisoar-for-slack-application/468/fortisoar-for-slack-application-v1-0-0) or the [FortiSOAR For Microsoft Teams Application](https://docs.fortinet.com/document/fortisoar/1.0.0/fortisoar-for-microsoft-teams-application/630/fortisoar-for-microsoft-teams-application-v1-0-0). Once configured use the `Set Slack and Teams Defaults` to enable to appropriate application and set the alert channel.
+
+Additionally for the AWS `Block Internet` action an allow list regex for Security Groups _not to be removed_ from instances and expected containment security group name can be configured  in the `Set AWS Security Group Defaults` variables. Ensure the containment security group exists in all applicable VPC before appying remediation.
+
 ### Lacework FortiCNAPP \> Potentially Compromised Host Alert Generate (Optional) 
 
 * **Setup**: Pull alerts from Lacework using `lacework_account` and `lacework_subaccount` as parameters. The Approval Action step will require a valid Slack email address. A placeholder value will need to be updated (default value is `<A VALID SLACK EMAIL ADDRESS>`)

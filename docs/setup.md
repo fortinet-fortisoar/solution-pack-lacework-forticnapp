@@ -37,6 +37,14 @@ For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Respon
                     },
                     {
                         "Action": [
+                            "ec2:CreateTags"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "AllowTagInstances"
+                    },
+                    {
+                        "Action": [
                             "ec2:DescribeSecurityGroups",
                             "ec2:DescribeSecurityGroupReferences",
                             "ec2:DescribeStaleSecurityGroups",

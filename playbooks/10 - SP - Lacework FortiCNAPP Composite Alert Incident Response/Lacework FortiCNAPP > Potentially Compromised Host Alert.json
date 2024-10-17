@@ -956,7 +956,7 @@
         {
             "@type": "WorkflowStep",
             "name": "Set Slack and Teams Defaults",
-            "description": "Enable\/Disable Team\/Slack response flows. Set Slack\/Team alert channel.",
+            "description": "Enable\/Disable Team\/Slack response flows. Set Slack\/Team alert channel.\n\nExample:\nslack_channel: C07PXXXXXXX\nteams_channel: Security Operations\nteams_channel_id: 19:xxxxxxxxxxxxxxxxxxxx@thread.tacv2\nteams_channel_group_id: xxxxx-xxx-xxxx-xxxx-xxxxxx",
             "arguments": {
                 "slack": "true",
                 "teams": "false",
@@ -1287,12 +1287,19 @@
                 "fieldbasedtrigger": {
                     "sort": [],
                     "limit": 30,
-                    "logic": "AND",
+                    "logic": "OR",
                     "filters": [
                         {
                             "type": "primitive",
                             "field": "source",
                             "value": "Lacework FortiCNAPP: Potentially Compromised Host",
+                            "operator": "eq",
+                            "_operator": "eq"
+                        },
+                        {
+                            "type": "primitive",
+                            "field": "source",
+                            "value": "Lacework FortiCNAPP: Potential Penetration Test",
                             "operator": "eq",
                             "_operator": "eq"
                         }

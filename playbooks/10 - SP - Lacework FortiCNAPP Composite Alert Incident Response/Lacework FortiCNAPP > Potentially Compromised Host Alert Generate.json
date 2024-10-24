@@ -282,10 +282,10 @@
                 "user_id": "{{vars.bot_context.user_id}}",
                 "category": "Composite",
                 "severity": "High",
-                "event_types": "[\"PotentiallyCompromisedHost\",\"PotentialPenetrationTest\"]",
+                "event_types": "[\"PotentiallyCompromisedHost\",\"PotentialPenetrationTest\",\"PotentiallyCompromisedAwsCredentials\"]",
                 "subCategory": "",
                 "pullTimeMacro": "LaceworkLastPullTime_{{vars['audit_info']['cyops_playbook_iri'].split('\/')[-1].replace('-','_')}}",
-                "alerts_type_map": "{'PotentiallyCompromisedAwsCredentials': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedHost': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentialPenetrationTest': {{'AlertType'| picklist('Anomalous Activity') }}\n}",
+                "alerts_type_map": "{'PotentiallyCompromisedAwsCredentials': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedHost': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentialPenetrationTest': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedAwsCredentials': {{'AlertType'| picklist('Anomalous Activity') }}\n}\n}",
                 "alerts_status_map": "{'Open': {{'AlertStatus'| picklist('Open') }},'InProgress': {{'AlertStatus'| picklist('Pending') }}, 'Closed': {{'AlertStatus'| picklist('Closed') }}}",
                 "alerts_severity_map": "{'Info': {{'Severity'| picklist('Minimal') }}, 'Low': {{'Severity'| picklist('Low') }}, 'Medium': {{'Severity'| picklist('Medium') }}, 'High': {{'Severity'| picklist('High') }}, 'Critical': {{'Severity'| picklist('Critical') }}}",
                 "fetch_alerts_in_last_X_minutes": "1440"

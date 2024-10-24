@@ -227,7 +227,7 @@
             "name": "Lacework FortiCNAPP Indicators",
             "description": null,
             "arguments": {
-                "unified_iocs": "{% set indicators=[] %}\n{% for indicator in  vars.alert_details.ip_iocs %}\n{% if indicators.append({\"type\":\"IP Address\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.url_iocs %}\n{% if indicators.append({\"type\":\"URL\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.domain_iocs %}\n{% if indicators.append({\"type\":\"Domain\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.cmdline_iocs %}\n{% if indicators.append({\"type\":\"Process\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.file256hash_iocs %}\n{% if indicators.append({\"type\":\"FileHash-SHA256\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.instanceIds %}\n{% if indicators.append({\"type\":\"Host\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.gcp_instanceIds %}\n{% if indicators.append({\"type\":\"Host\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.azure_instanceIds %}\n{% if indicators.append({\"type\":\"Host\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{{ indicators }}"
+                "unified_iocs": "{% set indicators=[] %}\n{% for indicator in  vars.alert_details.ip_iocs %}\n{% if indicators.append({\"type\":\"IP Address\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.url_iocs %}\n{% if indicators.append({\"type\":\"URL\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.domain_iocs %}\n{% if indicators.append({\"type\":\"Domain\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.cmdline_iocs %}\n{% if indicators.append({\"type\":\"Process\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.file256hash_iocs %}\n{% if indicators.append({\"type\":\"FileHash-SHA256\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.instanceIds %}\n{% if indicators.append({\"type\":\"Host\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.gcp_instanceIds %}\n{% if indicators.append({\"type\":\"Host\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.azure_instanceIds %}\n{% if indicators.append({\"type\":\"Host\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{% for indicator in  vars.alert_details.users %}\n{% if indicators.append({\"type\":\"User\", \"value\": indicator }) %}{% endif %}\n{% endfor %}\n{{ indicators }}"
             },
             "status": null,
             "top": "420",
@@ -308,12 +308,26 @@
                 "fieldbasedtrigger": {
                     "sort": [],
                     "limit": 30,
-                    "logic": "AND",
+                    "logic": "OR",
                     "filters": [
                         {
                             "type": "primitive",
                             "field": "source",
                             "value": "Lacework FortiCNAPP: Potentially Compromised Host",
+                            "operator": "eq",
+                            "_operator": "eq"
+                        },
+                        {
+                            "type": "primitive",
+                            "field": "source",
+                            "value": "Lacework FortiCNAPP: Potential Penetration Test",
+                            "operator": "eq",
+                            "_operator": "eq"
+                        },
+                        {
+                            "type": "primitive",
+                            "field": "source",
+                            "value": "Lacework FortiCNAPP: Potentially compromised AWS keys",
                             "operator": "eq",
                             "_operator": "eq"
                         }

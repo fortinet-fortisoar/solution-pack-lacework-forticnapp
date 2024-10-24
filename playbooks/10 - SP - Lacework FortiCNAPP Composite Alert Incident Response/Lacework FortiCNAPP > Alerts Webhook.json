@@ -21,9 +21,9 @@
             "description": "Add one or more matching values to filter for. If the payload value (e.g. event_title) is in the array (case sensistive match) the event will be processed. If the array object is empty all types will be matched.",
             "arguments": {
                 "event_types": "[]",
-                "event_titles": "[\"Potentially Compromised Host\", \"Potential Penetration Test\"]",
+                "event_titles": "[\"Potentially Compromised Host\", \"Potential Penetration Test\", \"Potentially compromised AWS keys\"]",
                 "event_sources": "[]",
-                "alerts_type_map": "{'PotentiallyCompromisedAwsCredentials': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedHost': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentialPenetrationTest': {{'AlertType'| picklist('Anomalous Activity') }}\n}",
+                "alerts_type_map": "{'PotentiallyCompromisedAwsCredentials': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedHost': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentialPenetrationTest': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedAwsCredentials':{{'AlertType'| picklist('Anomalous Activity') }}\n}",
                 "event_severities": "[]",
                 "alerts_status_map": "{'Open': {{'AlertStatus'| picklist('Open') }},'InProgress': {{'AlertStatus'| picklist('Pending') }}, 'Closed': {{'AlertStatus'| picklist('Closed') }}}",
                 "event_description": "[]",

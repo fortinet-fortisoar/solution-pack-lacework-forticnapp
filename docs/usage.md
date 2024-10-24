@@ -27,6 +27,33 @@
 
 Additionally for the AWS `Block Internet` action an allow list regex for Security Groups _not to be removed_ from instances and expected containment security group name can be configured  in the `Set AWS Security Group Defaults` variables. Ensure the containment security group exists in all applicable VPC before appying remediation.
 
+### Lacework FortiCNAPP \> Potentially Compromised Identity Alert
+
+* **Setup**: This playbook is repsonsible for starting chatops workflows in Teams/Slack. You'll need to have first configured the [FortiSOAR For Slack Application](https://docs.fortinet.com/document/fortisoar/1.0.0/fortisoar-for-slack-application/468/fortisoar-for-slack-application-v1-0-0) or the [FortiSOAR For Microsoft Teams Application](https://docs.fortinet.com/document/fortisoar/1.0.0/fortisoar-for-microsoft-teams-application/630/fortisoar-for-microsoft-teams-application-v1-0-0). Once configured use the `Set Slack and Teams Defaults` to enable to appropriate application and set the alert channel inside the playbook itself.
+
+Additionally for the AWS `Revoke Sessions` action ensure the fortisoar-revoke-session-policy exists in all applicable cloud accounts before appying remediation. The name of policy policy can be changed by updating the `Set AWS Policy Defaults` with a non-default value for `revoke_session_policy`. The value here should be the _name_ of the policy not arn as the workflow expects this policy is available in _each_ cloud account where remediation will take place. Use the following iam policy to configure this policy:  
+
+    ```json
+    {
+        "Statement": [
+            {
+                "Action": [
+                    "*"
+                ],
+                "Effect": "Deny",
+                "Resource": "*",
+                "Condition": {
+                    "DateGreaterThan": {
+                        "aws:TokenIssueTime": "1982-06-04T00:00:00Z"
+                    }
+                },
+                "Sid": "RevokeActiveSessions"
+            }
+        ],
+        "Version": "2012-10-17"
+    }
+    ```
+
 ### Lacework FortiCNAPP \> Potentially Compromised Host Alert Generate (Optional) 
 
 * **Setup**: Pull alerts from Lacework using `lacework_account` and `lacework_subaccount` as parameters. The Approval Action step will require a valid Slack email address. A placeholder value will need to be updated (default value is `<A VALID SLACK EMAIL ADDRESS>`)

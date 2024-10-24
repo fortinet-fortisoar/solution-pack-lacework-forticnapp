@@ -20,7 +20,8 @@ The **Lacework FortiCNAPP Composite Alert Incident Response** solution pack depe
 For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Response** solution pack, you can install and configure the connectors that help with the following:
 
 * **AWS EC2** - Amazon Elastic Compute Cloud (Amazon EC2) provides scalable computing capacity in the Amazon Web Services (AWS) cloud. You can use Amazon EC2 to launch as many or as few virtual servers as you need, configure security and networking, and manage storage.. To configure and use the AWS EC2 connector, refer to [Configuring AWS EC2](https://docs.fortinet.com/fortisoar/connectors/aws-ec2)
-    * **Permissions**: `ec2:StopInstances`, `ec2:StartInstances`, `ec2:DescribeInstances`, `ec2:CreateSnapshot`, `ec2:DescribeVolumes`   
+    * **Permissions**: 
+
     * IAM role example:
         ```json   
             {
@@ -33,6 +34,7 @@ For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Respon
                         ],
                         "Effect": "Allow",
                         "Resource": "*",
+                        "Condition": {},
                         "Sid": "AllowInstanceStartAndStop"
                     },
                     {
@@ -41,6 +43,7 @@ For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Respon
                         ],
                         "Effect": "Allow",
                         "Resource": "*",
+                        "Condition": {},
                         "Sid": "AllowTagInstances"
                     },
                     {
@@ -52,6 +55,7 @@ For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Respon
                         ],
                         "Effect": "Allow",
                         "Resource": "*",
+                        "Condition": {},
                         "Sid": "AllowDescribeSecurityGroups"
                     },
                     {
@@ -67,6 +71,7 @@ For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Respon
                         ],
                         "Effect": "Allow",
                         "Resource": "*",
+                        "Condition": {},
                         "Sid": "ModifySecurityGroups"
                     },
                     {
@@ -76,8 +81,44 @@ For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Respon
                         ],
                         "Effect": "Allow",
                         "Resource": "*",
+                        "Condition": {},
                         "Sid": "AllowCreateSnapshot"
+                    },
+                    {
+                        "Action": [
+                            "iam:GetUser",
+                            "iam:ListAttachedUserPolicies",
+                            "iam:ListMFADevices",
+                            "iam:ListGroupsForUser",
+                            "iam:ListAttachedGroupPolicies",
+                            "iam:GetPolicy",
+                            "iam:GetRole"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Condition": {},
+                        "Sid": "AllowIAMRead"
+                    },
+                    {
+                        "Action": [
+                            "iam:ListAccessKeys",
+                            "iam:UpdateAccessKey",
+                            "iam:ListMFADevices",
+                            "iam:ListGroupsForUser",
+                            "iam:ListAttachedGroupPolicies",
+                            "iam:GetPolicy",
+                            "iam:GetRole",
+                            "iam:ListUsers",
+                            "iam:ListRoles",
+                            "iam:PutRolePolicy",
+                            "iam:AttachRolePolicy"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Condition": {},
+                        "Sid": "AllowIAMRemediate"
                     }
+
                 ],
                 "Version": "2012-10-17"
             }
@@ -98,7 +139,9 @@ For optimal performance of **Lacework FortiCNAPP Composite Alert Incident Respon
     * **Configuration**: Create a service user in the Lacework console, download API keys, and configure the FortiSOAR connector with the subaccount name and the API keys.   
     * **Note**: Connector name must match the lower-case subaccount name. 
 
-* **Slack** - Slack is a cloud-based set of proprietary team collaboration tools and services. This connector facilitates automated operations like list channels, list users, send message etc. This release of Slack connector supports bi-directional communication between Slack and FortiSOAR, allowing you to leverage the power of FortiSOAR as part of your daily communications and threat investigation routines.. To configure and use the Slack connector, refer to [Configuring Slack](https://docs.fortinet.com/fortisoar/connectors/slack2)
+* **Slack** - Slack is a cloud-based set of proprietary team collaboration tools and services. This connector facilitates automated operations like list channels, list users, send message etc. This release of Slack connector supports bi-directional communication between Slack and FortiSOAR, allowing you to leverage the power of FortiSOAR as part of your daily communications and threat investigation routines. To configure and use the Slack connector, refer to [Configuring Slack](https://docs.fortinet.com/fortisoar/connectors/slack2)
+
+* **Microsoft Teams** - Microsoft Teams is a chat-based workspace in Office 365 that provides global, remote, and dispersed teams with the ability to work together and share information using a common space. This connector facilitates automated operation related to teams. To configure and use the Microsoft Teams connector, refer to [Configuring Microsoft Teams](https://docs.fortinet.com/fortisoar/connectors/fsrforteams)
 
 * **Azure Compute** - Azure Virtual Machines are image service instances that provide on-demand and scalable computing resources with usage-based pricing. This connector facilitates automated operations to get list of Azure Compute VM, get information about an Azure Compute VM, create, start, restart, stop and delete of an Azure Compute VM. To configure and use the Azure Compute connector, refer to [Configuring Azure Compute](https://docs.fortinet.com/fortisoar/connectors/azure-compute)
 

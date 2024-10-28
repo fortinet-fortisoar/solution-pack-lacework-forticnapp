@@ -1,0 +1,553 @@
+{
+    "@type": "Workflow",
+    "triggerLimit": null,
+    "name": "Lacework FortiCNAPP > Create FortiSOAR alert from Lacework FortiCNAPP Alert",
+    "aliasName": null,
+    "tag": null,
+    "description": "Creates a FortiSOAR alert from a Lacework FortiCNAPP alert",
+    "isActive": true,
+    "debug": false,
+    "singleRecordExecution": false,
+    "remoteExecutableFlag": false,
+    "parameters": [
+        "eventDetails"
+    ],
+    "synchronous": false,
+    "collection": "\/api\/3\/workflow_collections\/db426f50-e61a-4c76-b7d2-7df39beaf917",
+    "versions": [],
+    "triggerStep": "\/api\/3\/workflow_steps\/2314012a-7a9d-4d62-a3b8-7b391e7769d4",
+    "steps": [
+        {
+            "@type": "WorkflowStep",
+            "name": "AWS Machines",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/2e9dbb1c-5dd6-431f-ab0f-5fd6c789872a",
+                        "condition": "{{ vars.aws }}",
+                        "step_name": "Create AWS Record"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/b0727c85-4f38-4d85-8508-8c6348aff742",
+                        "step_name": "Set Result"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "337",
+            "left": "79",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "ca746ed8-45f9-436c-aefe-1f89ef1f95e6"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Azure Machines",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/31fa83e5-ff0d-4acf-936b-f4e04679b88c",
+                        "condition": "{{ vars.azure }}",
+                        "step_name": "Create Azure Record"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/b0727c85-4f38-4d85-8508-8c6348aff742",
+                        "step_name": "Set Result"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "317",
+            "left": "1159",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "8f869827-3c0e-4fdf-bc5c-8ba6a89a3f2d"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Create AWS Record",
+            "description": null,
+            "arguments": {
+                "config": "7589528d-2589-4576-bb8f-4c651224751a",
+                "version": "1.0.1",
+                "for_each": {
+                    "item": "{{ vars.steps.Machines }}",
+                    "__bulk": true,
+                    "parallel": false,
+                    "condition": "",
+                    "batch_size": 100
+                },
+                "resource": {
+                    "name": "{{vars.item.alertId}}:{{vars.item.alertName}}",
+                    "rule": "{{ vars.item.alertType }}",
+                    "type": "{{ vars.item.alertType | resolveRange(vars.alerts_type_map)}}",
+                    "state": "\/api\/3\/picklists\/a1bac09b-1441-45aa-ad1b-c88744e48e72",
+                    "source": "Lacework FortiCNAPP: Potentially Compromised Host",
+                    "status": "{{vars.item.status | resolveRange(vars.alerts_status_map)}}",
+                    "severity": "{{vars.item.severity | resolveRange(vars.alerts_severity_map)}}",
+                    "sourceId": "{{vars.item.alertId}}",
+                    "sourceIp": "{{ vars.item.machines[0].PROPS.internal_ip_addr }}",
+                    "__replace": "true",
+                    "deviceUID": "{{ vars.item.machines[0].PROPS.tags.InstanceId }}",
+                    "deviceType": "\/api\/3\/picklists\/1bfa4142-b3f2-4945-8393-66228f9260d3",
+                    "sourceTool": "Lacework FortiCNAPP",
+                    "sourcedata": "{{vars.item | toJSON }}",
+                    "description": "{{vars.item.alertInfo.subject}}\n\nPolicy ID:\t{{vars.item.policyId}}\n\nReachability: {{vars.item.reachability}}\n\nDerived Fields:\n- Source: {{vars.item.derivedFields.source}}\n- Category:\t{{vars.item.derivedFields.category}}\n- Sub Category: {{vars.item.derivedFields['sub_category']}}\n\nAffected AWS Instance Ids: {{ vars.item.instanceIds | join(',') }}\n\n{% for machine in vars.item.machines %}\nAWS Instance Details: \n- Name: {{ machine.PROPS.tags.Name }}\n- InstanceId: {{ machine.PROPS.tags.InstanceId }}\n- OrganizationId: {{ machine.PROPS.tags.OrganizationId }}\n- Account: {{ machine.PROPS.tags.Account }}\n- Zone: {{  machine.PROPS.tags.Zone }}\n- VpcId: {{ machine.PROPS.tags.VpcId }}\n- SubnetId: {{ machine.PROPS.tags.SubnetId }}\n- Internet Exposure: {{ machine.PROPS.internet_exposure }}\n- External Address: {{ machine.PROPS.tags.ExternalIp }}\n- Internal Address: {{ machine.PROPS.tags.InternalIp }}\n\n{% endfor %}",
+                    "iPAddresses": "{{ vars.item.ip_iocs }}",
+                    "targetAsset": "{{ vars.item.machines[0].PROPS.tags.InstanceId }}",
+                    "ackSlaStatus": "\/api\/3\/picklists\/72979f64-e8b9-4888-a965-957e0ec24818",
+                    "computerName": "{{ vars.item.machines[0].PROPS.tags.Name }}",
+                    "respSlaStatus": "\/api\/3\/picklists\/72979f64-e8b9-4888-a965-957e0ec24818",
+                    "priorityWeight": 1,
+                    "escalatedtoincident": "\/api\/3\/picklists\/2128a09c-153d-4db3-985d-de6be33deae5",
+                    "resolvedAutomatedly": false,
+                    "alertRemainingAckSLA": 0
+                },
+                "_showJson": false,
+                "operation": "Overwrite",
+                "collection": "\/api\/3\/upsert\/alerts",
+                "__recommend": [],
+                "fieldOperation": {
+                    "recordTags": "Overwrite"
+                },
+                "step_variables": []
+            },
+            "status": null,
+            "top": "460",
+            "left": "80",
+            "stepType": "\/api\/3\/workflow_step_types\/2597053c-e718-44b4-8394-4d40fe26d357",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "2e9dbb1c-5dd6-431f-ab0f-5fd6c789872a"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Create Azure Record",
+            "description": null,
+            "arguments": {
+                "config": "7589528d-2589-4576-bb8f-4c651224751a",
+                "version": "1.0.1",
+                "for_each": {
+                    "item": "{{ vars.steps.Machines }}",
+                    "__bulk": true,
+                    "parallel": false,
+                    "condition": "",
+                    "batch_size": 100
+                },
+                "resource": {
+                    "name": "{{vars.item.alertId}}:{{vars.item.alertName}}",
+                    "type": "{{vars.item.alertType | resolveRange(vars.alerts_type_map)}}",
+                    "state": "\/api\/3\/picklists\/a1bac09b-1441-45aa-ad1b-c88744e48e72",
+                    "source": "Lacework FortiCNAPP: Potentially Compromised Host",
+                    "status": "{{vars.item.status | resolveRange(vars.alerts_status_map)}}",
+                    "severity": "{{vars.item.severity | resolveRange(vars.alerts_severity_map)}}",
+                    "sourceId": "{{vars.item.alertId}}",
+                    "sourceIp": "{{ vars.item.azure_machines[0].PROPS.internal_ip_addr }}",
+                    "__replace": "true",
+                    "deviceUID": "{{ vars.item.azure_machines[0].PROPS.tags.InstanceId }}",
+                    "sourcedata": "{{vars.item | toJSON }}",
+                    "description": "{{vars.item.alertInfo.subject}}\n\nPolicy ID:\t{{vars.item.policyId}}\n\nReachability: {{vars.item.reachability}}\n\nDerived Fields:\n- Source: {{vars.item.derivedFields.source}}\n- Category:\t{{vars.item.derivedFields.category}}\n- Sub Category: {{vars.item.derivedFields['sub_category']}}\n\nAffected Azure Instance Ids: {{ vars.item.azure_instanceIds | join(',') }}\n\n{% for machine in vars.item.machines %}\nAzure Instance Details: \n- Name: {{ machine.PROPS.tags.Name }}\n- InstanceId: {{ machine.PROPS.tags.InstanceId }}\n- TenantId: {{ machine.PROPS.tags.TenantId }}\n- TenantName: {{ machine.PROPS.tags.TenantName }}\n- SubscriptionId: {{ machine.PROPS.tags.SubscriptionId }}\n- SubscriptionName: {{ machine.PROPS.tags.SubscriptionName }}~~~~\n- Zone: {{  machine.PROPS.tags.Zone }}\n- Internet Exposure: {{ machine.PROPS.tags.internet_exposure }}\n- External Address: {{ machine.PROPS.tags.ExternalIp }}\n- Internal Address: {{ machine.PROPS.tags.InternalIp }}\n\n{% endfor %}",
+                    "iPAddresses": "{% set ip_addresses=[] %}{% for machine in vars.item.azure_machines %}{% if \"InternalIp\" in machine.PROPS.tags %}{% if ip_addresses.append(machine.PROPS.tags.InternalIp) %}{% endif %}{% endif %}{% if \"ExternalIp\" in machine.PROPS.tags %}{% if ip_addresses.append(machine.PROPS.tags.ExternalIp) %}{% endif %}{% endif %}{% endfor %}{{ ip_addresses }}",
+                    "targetAsset": "{{ vars.item.azure_machines[0].PROPS.tags.InstanceId }}",
+                    "ackSlaStatus": "\/api\/3\/picklists\/72979f64-e8b9-4888-a965-957e0ec24818",
+                    "computerName": "{{ vars.item.machines[0].PROPS.tags.Hostname }}",
+                    "respSlaStatus": "\/api\/3\/picklists\/72979f64-e8b9-4888-a965-957e0ec24818",
+                    "priorityWeight": 1,
+                    "escalatedtoincident": "\/api\/3\/picklists\/2128a09c-153d-4db3-985d-de6be33deae5",
+                    "resolvedAutomatedly": false,
+                    "alertRemainingAckSLA": 0
+                },
+                "_showJson": false,
+                "operation": "Overwrite",
+                "collection": "\/api\/3\/upsert\/alerts",
+                "__recommend": [],
+                "fieldOperation": {
+                    "recordTags": "Overwrite"
+                },
+                "step_variables": []
+            },
+            "status": null,
+            "top": "457",
+            "left": "1159",
+            "stepType": "\/api\/3\/workflow_step_types\/2597053c-e718-44b4-8394-4d40fe26d357",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "31fa83e5-ff0d-4acf-936b-f4e04679b88c"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Create GCP Record",
+            "description": null,
+            "arguments": {
+                "config": "7589528d-2589-4576-bb8f-4c651224751a",
+                "version": "1.0.1",
+                "for_each": {
+                    "item": "{{ vars.steps.Machines }}",
+                    "__bulk": true,
+                    "parallel": false,
+                    "condition": "",
+                    "batch_size": 100
+                },
+                "resource": {
+                    "name": "{{vars.item.alertId}}:{{vars.item.alertName}}",
+                    "type": "{{vars.item.alertType | resolveRange(vars.alerts_type_map)}}",
+                    "state": "\/api\/3\/picklists\/a1bac09b-1441-45aa-ad1b-c88744e48e72",
+                    "source": "Lacework FortiCNAPP: Potentially Compromised Host",
+                    "status": "{{vars.item.status | resolveRange(vars.alerts_status_map)}}",
+                    "severity": "{{vars.item.severity | resolveRange(vars.alerts_severity_map)}}",
+                    "sourceId": "{{vars.item.alertId}}",
+                    "sourceIp": "{{ vars.item.gcp_machines[0].PROPS.internal_ip_addr }}",
+                    "__replace": "true",
+                    "deviceUID": "{{ vars.item.gcp_machines[0].PROPS.tags.InstanceId }}",
+                    "sourcedata": "{{vars.item | toJSON }}",
+                    "description": "{{vars.item.alertInfo.subject}}\n\nPolicy ID:\t{{vars.item.policyId}}\n\nReachability: {{vars.item.reachability}}\n\nDerived Fields:\n- Source: {{vars.item.derivedFields.source}}\n- Category:\t{{vars.item.derivedFields.category}}\n- Sub Category: {{vars.item.derivedFields['sub_category']}}\n\nAffected GCP Instance Ids: {{ vars.item.gcp_instanceIds | join(',') }}\n\n{% for machine in vars.item.machines %}\nGCP Instance Details: \n- Name: {{ machine.PROPS.tags.Name }}\n- InstanceId: {{ machine.PROPS.tags.InstanceId }}\n- OrganizationId: {{ machine.PROPS.tags.OrganizationId }}\n- OrganizationName: {{ machine.PROPS.tags.OrganizationName }}\n- ProjectId: {{ machine.PROPS.tags.ProjectId }}\n- FolderId: {{ machine.PROPS.tags.FolderId }}\n- FolderName: {{ machine.PROPS.tags.FolderName }}\n- Zone: {{  machine.PROPS.tags.Zone }}\n- Internet Exposure: {{ machine.PROPS.tags.internet_exposure }}\n- External Address: {{ machine.PROPS.tags.ExternalIp }}\n- Internal Address: {{ machine.PROPS.tags.InternalIp }}\n\n{% endfor %}",
+                    "iPAddresses": "{% set ip_addresses=[] %}{% for machine in vars.item.gcp_machines %}{% if \"InternalIp\" in machine.PROPS.tags %}{% if ip_addresses.append(machine.PROPS.tags.InternalIp) %}{% endif %}{% endif %}{% if \"ExternalIp\" in machine.PROPS.tags %}{% if ip_addresses.append(machine.PROPS.tags.ExternalIp) %}{% endif %}{% endif %}{% endfor %}{{ ip_addresses }}",
+                    "targetAsset": "{{ vars.item.gcp_machines[0].PROPS.tags.InstanceId }}",
+                    "ackSlaStatus": "\/api\/3\/picklists\/72979f64-e8b9-4888-a965-957e0ec24818",
+                    "computerName": "{{ vars.item.machines[0].PROPS.tags.Hostname }}",
+                    "respSlaStatus": "\/api\/3\/picklists\/72979f64-e8b9-4888-a965-957e0ec24818",
+                    "priorityWeight": 1,
+                    "escalatedtoincident": "\/api\/3\/picklists\/2128a09c-153d-4db3-985d-de6be33deae5",
+                    "resolvedAutomatedly": false,
+                    "alertRemainingAckSLA": 0
+                },
+                "_showJson": false,
+                "operation": "Overwrite",
+                "collection": "\/api\/3\/upsert\/alerts",
+                "__recommend": [],
+                "fieldOperation": {
+                    "recordTags": "Overwrite"
+                },
+                "step_variables": []
+            },
+            "status": null,
+            "top": "457",
+            "left": "559",
+            "stepType": "\/api\/3\/workflow_step_types\/2597053c-e718-44b4-8394-4d40fe26d357",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "e89ff998-3405-4d8e-8f02-5e514a13227a"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "CSP Decision Variable",
+            "description": null,
+            "arguments": {
+                "aws": "{% set items=[] %}\n{% for item in vars.steps.Machines %}{% if item.machines | length > 0 %}{% if items.append(1) %}{% endif %}{% endif %}{% endfor %}{{ items | length > 0 }}",
+                "gcp": "{% set items=[] %}\n{% for item in vars.steps.Machines %}{% if item.gcp_machines | length > 0 %}{% if items.append(1) %}{% endif %}{% endif %}{% endfor %}{{ items | length > 0 }}",
+                "azure": "{% set items=[] %}\n{% for item in vars.steps.Machines %}{% if item.azure_machines | length > 0 %}{% if items.append(1) %}{% endif %}{% endif %}{% endfor %}{{ items | length > 0 }}"
+            },
+            "status": null,
+            "top": "240",
+            "left": "560",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "03b730a9-7468-4ee9-82fd-35a1da85eba5"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "GCP Machines",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "step_iri": "\/api\/3\/workflow_steps\/e89ff998-3405-4d8e-8f02-5e514a13227a",
+                        "condition": "{{ vars.gcp }}",
+                        "step_name": "Create GCP Record"
+                    },
+                    {
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/b0727c85-4f38-4d85-8508-8c6348aff742",
+                        "step_name": "Set Result"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "340",
+            "left": "560",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "6edb4efd-dd78-4d35-ab8c-669eb0fc82f3"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Machine Record List",
+            "description": null,
+            "arguments": {
+                "alert_details": "{{ vars.eventDetails }}"
+            },
+            "status": null,
+            "top": "60",
+            "left": "560",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "f37b0d94-99d3-44aa-8074-e47e5b2808fa"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Machines",
+            "description": null,
+            "arguments": {
+                "hosts": "{% set hosts=[] %}{% for host in vars.item.data.data.alertInfo.subject[:-1].split(\"Hosts:\")[1].split(\";\")[0].split(\",\") %}{% if hosts.append(host.strip()) %}{% endif %}{% endfor %}{{hosts | unique}}",
+                "status": "{{ vars.item.data.data.status }}",
+                "alertId": "{{ vars.item.data.data.alertId }}",
+                "endTime": "{{ vars.item.data.data.endTime }}",
+                "ip_iocs": "{%- set matches=[] %}\n{%- for fact in vars.item.data.data.alertInfo.supportingFacts %}\n  {%- for indicator in fact.subElements %}\n      {%- for sub in indicator.subElements %}\n        {%- if 'The involved remote host(s):' in sub.supportingFactText or 'Observed destination hosts include:' in sub.supportingFactText %}\n          {%- for sub_fact in sub.subElements %}\n            {%- if (sub_fact.supportingFactText | regex_search(\"([0-9]{1,3}\\\\.){3}[0-9]{1,3}\")) %}      \n              {%- if matches.append(sub_fact.supportingFactText) %}{% endif %}\n            {%- endif %}\n          {%- endfor %} \n        {%- endif %}\n      {%- endfor %} \n  {%- endfor %}                           \n{%- endfor %}\n{{ matches | unique }}",
+                "subject": "{{ vars.item.data.data.alertInfo.subject }}",
+                "for_each": {
+                    "item": "{{ vars.alert_details }}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "machines": "{% set hosts=[] %}{% for host in vars.item.data.data.alertInfo.subject[:-1].split(\"Hosts:\")[1].split(\";\")[0].split(\",\") %}{% if hosts.append(host.strip()) %}{% endif %}{% endfor %}\n{% set instanceIds = [] %}\n{% set machines = [] %}\n{% for machine in vars.item.data.data.entityMap.Machine %}{% if machine.PROPS.tags.Hostname in hosts and \"tags\" in machine.PROPS and machine.PROPS.tags.VmProvider == \"AWS\" and \"InstanceId\" in machine.PROPS.tags and \"Account\" in machine.PROPS.tags and \"Zone\" in machine.PROPS.tags and machine.PROPS.tags.InstanceId not in instanceIds %}{% if machines.append(machine) %}{% endif %}{% if instanceIds.append(machine.PROPS.tags.InstanceId) %}{% endif %}{% endif %}{% endfor %}{{ machines | unique}}",
+                "policyId": "{{ vars.item.data.data.alertName }}",
+                "severity": "{{ vars.item.data.data.severity }}",
+                "url_iocs": "{%- set matches=[] %}\n{%- for fact in vars.item.data.data.entityMap.Process %}\n  {%- if fact.PROPS is defined and fact.PROPS.cmdline is defined and (fact.PROPS.cmdline|regex_search('https?:\/\/[^\\\\s]+')) %}\n    {%- if matches.append(fact.PROPS.cmdline|regex_search('https?:\/\/[^\\\\s]+', '\\\\0')) %}{% endif %}\n  {%- endif %}\n{%- endfor %}\n{{ matches | unique }}",
+                "alertName": "{{ vars.item.data.data.alertName }}",
+                "alertType": "{{ vars.item.data.data.alertName }}",
+                "startTime": "{{ vars.item.data.data.startTime }}",
+                "description": "{{ vars.item.data.data.alertInfo.description }}",
+                "domain_iocs": "{%- set matches=[] %}\n{%- for fact in vars.item.data.data.alertInfo.supportingFacts %}\n  {%- for indicator in fact.subElements %}\n      {%- for sub in indicator.subElements %}\n        {%- if 'The involved remote host(s):' in sub.supportingFactText or 'Observed destination hosts include:' in sub.supportingFactText %}\n          {%- for sub_fact in sub.subElements %}\n            {%- if not (sub_fact.supportingFactText |regex_search(\"([0-9]{1,3}\\\\.){3}[0-9]{1,3}\")) %}      \n              {%- if matches.append(sub_fact.supportingFactText) %}{% endif %}\n            {%- endif %}\n          {%- endfor %} \n        {%- endif %}\n      {%- endfor %} \n  {%- endfor %}                           \n{%- endfor %}\n{{ matches | unique }}",
+                "instanceIds": "{% set hosts=[] %}{% for host in vars.item.data.data.alertInfo.subject[:-1].split(\"Hosts:\")[1].split(\";\")[0].split(\",\") %}{% if hosts.append(host.strip()) %}{% endif %}{% endfor %}\n{% set instanceIds = [] %}\n{% set machines = [] %}\n{% for machine in vars.item.data.data.entityMap.Machine %}{% if machine.PROPS.tags.Hostname in hosts and \"tags\" in machine.PROPS and machine.PROPS.tags.VmProvider == \"AWS\" and \"InstanceId\" in machine.PROPS.tags and \"Account\" in machine.PROPS.tags and \"Zone\" in machine.PROPS.tags and machine.PROPS.tags.InstanceId not in instanceIds %}{% if machines.append(machine) %}{% endif %}{% if instanceIds.append(machine.PROPS.tags.InstanceId) %}{% endif %}{% endif %}{% endfor %}{{ instanceIds | unique }}",
+                "tagMetadata": "{{ vars.item.data.data.tagMetadata }}",
+                "cmdline_iocs": "{%- set matches=[] %}\n{%- for fact in vars.item.data.data.alertInfo.supportingFacts %}\n  {%- for indicator in fact.subElements %}\n      {%- for sub in indicator.subElements %}\n        {%- if 'Example command line statements include:' in sub.supportingFactText %}\n          {%- for sub_fact in sub.subElements %}\n            {%- if matches.append(sub_fact.supportingFactText) %}{% endif %}\n          {%- endfor %} \n        {%- endif %}\n      {%- endfor %} \n  {%- endfor %}                           \n{%- endfor %}\n{%- for fact in vars.item.data.data.entityMap.Process %}\n  {%- if fact.PROPS is defined and fact.PROPS.cmdline is defined and (\"\/dev\/tcp\" in fact.PROPS.cmdline or \"http\" in fact.PROPS.cmdline) %}\n    {%- if matches.append(fact.PROPS.cmdline) %}{% endif %}\n  {%- endif %}\n{%- endfor %}\n{{ matches | unique }}",
+                "gcp_machines": "{% set hosts=[] %}{% for host in vars.item.data.data.alertInfo.subject[:-1].split(\"Hosts:\")[1].split(\";\")[0].split(\",\") %}{% if hosts.append(host.strip()) %}{% endif %}{% endfor %}\n{% set instanceIds = [] %}\n{% set machines = [] %}\n{% for machine in vars.item.data.data.entityMap.Machine %}{% if machine.PROPS.tags.Hostname in hosts and \"tags\" in machine.PROPS and machine.PROPS.tags.VmProvider == \"GCE\" and \"InstanceId\" in machine.PROPS.tags and \"ProjectId\" in machine.PROPS.tags and \"Zone\" in machine.PROPS.tags and machine.PROPS.tags.InstanceName not in instanceIds %}{% if machines.append(machine) %}{% endif %}{% if instanceIds.append(machine.PROPS.tags.InstanceName) %}{% endif %}{% endif %}{% endfor %}{{ machines | unique }}",
+                "derivedFields": "{{ vars.item.data.data.derivedFields }}",
+                "evolvingAlert": "{{ vars.item.data.data.evolvingAlert }}",
+                "azure_machines": "{% set hosts=[] %}{% for host in vars.item.data.data.alertInfo.subject[:-1].split(\"Hosts:\")[1].split(\";\")[0].split(\",\") %}{% if hosts.append(host.strip()) %}{% endif %}{% endfor %}\n{% set instanceIds = [] %}\n{% set machines = [] %}\n{% for machine in vars.item.data.data.entityMap.Machine %}{% if machine.PROPS.tags.Hostname in hosts and \"tags\" in machine.PROPS and machine.PROPS.tags.VmProvider == \"Microsoft.Compute\" and \"InstanceId\" in machine.PROPS.tags and \"SubscriptionId\" in machine.PROPS.tags and \"Zone\" in machine.PROPS.tags and machine.PROPS.tags.InstanceId not in instanceIds %}{% if machines.append(machine) %}{% endif %}{% if instanceIds.append(machine.PROPS.tags.InstanceId) %}{% endif %}{% endif %}{% endfor %}{{ machines | unique }}",
+                "gcp_instanceIds": "{% set hosts=[] %}{% for host in vars.item.data.data.alertInfo.subject[:-1].split(\"Hosts:\")[1].split(\";\")[0].split(\",\") %}{% if hosts.append(host.strip()) %}{% endif %}{% endfor %}\n{% set instanceIds = [] %}\n{% set machines = [] %}\n{% for machine in vars.item.data.data.entityMap.Machine %}{% if machine.PROPS.tags.Hostname in hosts and \"tags\" in machine.PROPS and machine.PROPS.tags.VmProvider == \"GCE\" and \"InstanceId\" in machine.PROPS.tags and \"ProjectId\" in machine.PROPS.tags and \"Zone\" in machine.PROPS.tags and machine.PROPS.tags.InstanceName not in instanceIds %}{% if machines.append(machine) %}{% endif %}{% if instanceIds.append(machine.PROPS.tags.InstanceName) %}{% endif %}{% endif %}{% endfor %}{{ instanceIds | unique }}",
+                "vulnerabilities": "{%- set matches=[] %}\n{%- for fact in vars.item.data.data.alertInfo.supportingFacts %}\n  {%- for indicator in fact.subElements %}\n      {%- for sub in indicator.subElements %}\n        {%- if 'Host(s) from this alert have the following vulnerabilities which have a high EPSS score indicating a likelihood of exploitation.' in sub.supportingFactText %}\n          {%- for sub_fact in sub.subElements %}\n            {%- if matches.append(sub_fact.supportingFactText) %}{% endif %}\n          {%- endfor %} \n        {%- endif %}\n      {%- endfor %} \n  {%- endfor %}                           \n{%- endfor %}\n{{ matches | unique }}",
+                "file256hash_iocs": "{%- set matches=[] %}\n{%- for fact in vars.item.data.data.entityMap.FileExePath %}\n  {%- if matches.append(fact.PROPS.last_filedata_hash) %}{% endif %}\n{%- endfor %}{{ matches | unique }}",
+                "internetExposure": "{{ vars.item.data.data.internetExposure }}",
+                "lacework_account": "{{ vars.lacework_account }}",
+                "mitre_techniques": "{%- set matches=[] %}\n{%- for technique in vars.item.data.data.tagMetadata %}\n  {%- if matches.append(technique.tagMetadata.customerFacingId) %}{% endif %}\n{%- endfor %}{{ matches | unique }}",
+                "azure_instanceIds": "{% set hosts=[] %}{% for host in vars.item.data.data.alertInfo.subject[:-1].split(\"Hosts:\")[1].split(\";\")[0].split(\",\") %}{% if hosts.append(host.strip()) %}{% endif %}{% endfor %}\n{% set instanceIds = [] %}\n{% set machines = [] %}\n{% for machine in vars.item.data.data.entityMap.Machine %}{% if machine.PROPS.tags.Hostname in hosts and \"tags\" in machine.PROPS and machine.PROPS.tags.VmProvider == \"Microsoft.Compute\" and \"InstanceId\" in machine.PROPS.tags and \"SubscriptionId\" in machine.PROPS.tags and \"Zone\" in machine.PROPS.tags and machine.PROPS.tags.InstanceId not in instanceIds %}{% if machines.append(machine) %}{% endif %}{% if instanceIds.append(machine.PROPS.tags.InstanceName) %}{% endif %}{% endif %}{% endfor %}{{ instanceIds | unique }}",
+                "lacework_subaccount": "{{ vars.lacework_subaccount }}",
+                "lastUserUpdatedTime": "{{ vars.item.data.data.lastUserUpdatedTime }}"
+            },
+            "status": null,
+            "top": "140",
+            "left": "560",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "4f58c0ac-00e3-47d6-8087-56fa165c7627"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Set Result",
+            "description": null,
+            "arguments": {
+                "macro_name": "{{vars.pullTimeMacro}}",
+                "updated_last_pull_time": "{{vars.current_timestamp}}"
+            },
+            "status": null,
+            "top": "720",
+            "left": "560",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "uuid": "b0727c85-4f38-4d85-8508-8c6348aff742"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Start",
+            "description": null,
+            "arguments": {
+                "__triggerLimit": true,
+                "step_variables": {
+                    "input": {
+                        "params": []
+                    }
+                },
+                "triggerOnSource": true,
+                "triggerOnReplicate": false
+            },
+            "status": null,
+            "top": "60",
+            "left": "600",
+            "stepType": "\/api\/3\/workflow_step_types\/b348f017-9a94-471f-87f8-ce88b6a7ad62",
+            "group": null,
+            "uuid": "2314012a-7a9d-4d62-a3b8-7b391e7769d4"
+        }
+    ],
+    "routes": [
+        {
+            "@type": "WorkflowRoute",
+            "name": "AWS Machines -> Create AWS Record",
+            "targetStep": "\/api\/3\/workflow_steps\/2e9dbb1c-5dd6-431f-ab0f-5fd6c789872a",
+            "sourceStep": "\/api\/3\/workflow_steps\/ca746ed8-45f9-436c-aefe-1f89ef1f95e6",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "76bd04ab-7501-4791-8690-fb59fa071435"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "AWS Machines -> Set Result",
+            "targetStep": "\/api\/3\/workflow_steps\/b0727c85-4f38-4d85-8508-8c6348aff742",
+            "sourceStep": "\/api\/3\/workflow_steps\/ca746ed8-45f9-436c-aefe-1f89ef1f95e6",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "9de9bd03-787f-423c-9746-6033bfabf9ef"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Azure Machines -> Create Azure Record",
+            "targetStep": "\/api\/3\/workflow_steps\/31fa83e5-ff0d-4acf-936b-f4e04679b88c",
+            "sourceStep": "\/api\/3\/workflow_steps\/8f869827-3c0e-4fdf-bc5c-8ba6a89a3f2d",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "a5bcea17-13f3-4548-83cd-4efd9d85af7a"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Azure Machines -> Set Result",
+            "targetStep": "\/api\/3\/workflow_steps\/b0727c85-4f38-4d85-8508-8c6348aff742",
+            "sourceStep": "\/api\/3\/workflow_steps\/8f869827-3c0e-4fdf-bc5c-8ba6a89a3f2d",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "431b2a66-4eb5-448f-99c5-0e44774e00f7"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Create AWS Record -> Set Result",
+            "targetStep": "\/api\/3\/workflow_steps\/b0727c85-4f38-4d85-8508-8c6348aff742",
+            "sourceStep": "\/api\/3\/workflow_steps\/2e9dbb1c-5dd6-431f-ab0f-5fd6c789872a",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "351666f4-a2cb-44df-bcf0-97554abaf8af"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Create Azure Record -> Set Result",
+            "targetStep": "\/api\/3\/workflow_steps\/b0727c85-4f38-4d85-8508-8c6348aff742",
+            "sourceStep": "\/api\/3\/workflow_steps\/31fa83e5-ff0d-4acf-936b-f4e04679b88c",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "619fc449-f5f2-46ed-b22b-3e3d7457916a"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Create GCP Record -> Set Result",
+            "targetStep": "\/api\/3\/workflow_steps\/b0727c85-4f38-4d85-8508-8c6348aff742",
+            "sourceStep": "\/api\/3\/workflow_steps\/e89ff998-3405-4d8e-8f02-5e514a13227a",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "f0ce1e2c-daae-4020-ba95-f9f1bfcd4a0e"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "CSP Decision Variable -> AWS Machines",
+            "targetStep": "\/api\/3\/workflow_steps\/ca746ed8-45f9-436c-aefe-1f89ef1f95e6",
+            "sourceStep": "\/api\/3\/workflow_steps\/03b730a9-7468-4ee9-82fd-35a1da85eba5",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "596ba690-7c90-4332-9eba-bfcd685f834b"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "CSP Decision Variable -> Azure Machines",
+            "targetStep": "\/api\/3\/workflow_steps\/8f869827-3c0e-4fdf-bc5c-8ba6a89a3f2d",
+            "sourceStep": "\/api\/3\/workflow_steps\/03b730a9-7468-4ee9-82fd-35a1da85eba5",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "1206f9a0-0313-46f7-8093-1597712f22d9"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "CSP Decision Variable -> GCP Machines",
+            "targetStep": "\/api\/3\/workflow_steps\/6edb4efd-dd78-4d35-ab8c-669eb0fc82f3",
+            "sourceStep": "\/api\/3\/workflow_steps\/03b730a9-7468-4ee9-82fd-35a1da85eba5",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "c08da559-dbeb-4bb1-9a36-ab85e87f5fc0"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "GCP Machines -> Create GCP Record",
+            "targetStep": "\/api\/3\/workflow_steps\/e89ff998-3405-4d8e-8f02-5e514a13227a",
+            "sourceStep": "\/api\/3\/workflow_steps\/6edb4efd-dd78-4d35-ab8c-669eb0fc82f3",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "892d935e-0387-43b7-aac6-dd9c84a85a69"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "GCP Machines -> Set Result",
+            "targetStep": "\/api\/3\/workflow_steps\/b0727c85-4f38-4d85-8508-8c6348aff742",
+            "sourceStep": "\/api\/3\/workflow_steps\/6edb4efd-dd78-4d35-ab8c-669eb0fc82f3",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "ee449d63-8ef1-4a7b-8897-f49c777c54db"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Machine Record List -> Machines",
+            "targetStep": "\/api\/3\/workflow_steps\/4f58c0ac-00e3-47d6-8087-56fa165c7627",
+            "sourceStep": "\/api\/3\/workflow_steps\/f37b0d94-99d3-44aa-8074-e47e5b2808fa",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "d14be2a1-dc42-4741-aafe-86b509086bf1"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Machines -> CSP Decision Variable",
+            "targetStep": "\/api\/3\/workflow_steps\/03b730a9-7468-4ee9-82fd-35a1da85eba5",
+            "sourceStep": "\/api\/3\/workflow_steps\/4f58c0ac-00e3-47d6-8087-56fa165c7627",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "1d57fa8e-e3b2-4d21-8899-9a6bdfbb81a5"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Start -> Machine Record List",
+            "targetStep": "\/api\/3\/workflow_steps\/f37b0d94-99d3-44aa-8074-e47e5b2808fa",
+            "sourceStep": "\/api\/3\/workflow_steps\/2314012a-7a9d-4d62-a3b8-7b391e7769d4",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "0e476e16-a479-4416-b14d-9ef9969094a4"
+        }
+    ],
+    "groups": [
+        {
+            "@type": "WorkflowGroup",
+            "name": "Create FortiSOAR  Alert from Lacework Composite Machine Alert",
+            "description": "",
+            "type": "block",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": false,
+            "metadata": [],
+            "reusable": false,
+            "top": "160",
+            "left": "40",
+            "height": "835",
+            "width": "1463",
+            "uuid": "1c684fab-83f2-4c5f-bca0-caaac5250617",
+            "recordTags": []
+        }
+    ],
+    "priority": "\/api\/3\/picklists\/2b563c61-ae2c-41c0-a85a-c9709585e3f2",
+    "uuid": "d5c994c4-0b96-4c5c-a794-a266f7727bd4",
+    "owners": [],
+    "isPrivate": false,
+    "deletedAt": null,
+    "recordTags": []
+}

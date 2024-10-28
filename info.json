@@ -1,9 +1,10 @@
 {
-    "name": "laceworkFortiCNAPPForCompositeAlerts",
-    "version": "0.1.0",
+    "name": "laceworkFortiCNAPPCompositeAlertIncidentResponse",
+    "version": "1.0.0",
     "fsrMinCompatibility": "7.4.0",
     "type": "solutionpack",
-    "label": "Lacework FortiCNAPP Composite Alerts",
+    "local": true,
+    "label": "Lacework FortiCNAPP Composite Alert Incident Response",
     "dependencies": [
         {
             "name": "sOARFramework",
@@ -12,10 +13,17 @@
             "minVersion": "2.3.0"
         }
     ],
+    "featuredTags": [
+        {
+            "color": "#2d87e3",
+            "tag": "preview"
+        }
+    ],
     "prerequisite": null,
     "publisher": "Fortinet",
+    "contributor": "Jamie Mcmurray",
     "description": "This Solution Pack enables end-users to take action on Lacework FortiCNAPP alerts using FortiSOAR. It includes playbooks for both pulling composite alerts from Lacework FortiCNAPP and receiving pushed events via the Lacework alert channel. An enrichment playbook generates FortiSOAR alerts with extracted indicators, leveraging automatic enrichment within FortiSOAR. Additionally, an example Slack ChatOps workflow demonstrates an incident response process for Potentially Compromised Host alerts across AWS, Google Cloud, and Azure.",
-    "help": "https://github.com/fortinet-fortisoar/solution-pack-lacework-forticnapp/blob/develop/README.md",
+    "help": "https://github.com/fortinet-fortisoar/solution-pack-lacework-forticnapp/blob/release/1.0.0/README.md",
     "category": [
         "Cloud Security"
     ],
@@ -29,38 +37,37 @@
         "Google",
         "Lacework"
     ],
-    "date": "2024-09-24T22:40:52+00:00",
+    "date": "2024-09-26T05:08:32+00:00",
     "contents": {
-        "globalVariables": [
-            {
-                "name": "Excludelist_Ports",
-                "value": "",
-                "default_value": ""
-            },
-            {
-                "name": "Excludelist_Files",
-                "value": "",
-                "default_value": ""
-            },
-            {
-                "name": "Indicator_Type_Map",
-                "value": "{ \"attachmentNames\":\"File\",\"commandLine\": \"Process\",\"computerName\":\"Host\",\"decodedCommandLine\":\"Process\",\"destinationIp\": \"IP Address\",\"destinationPort\":\"Port\",\"domain\":\"Domain\",\"dllLoaded\": \"Process\",\"emailFrom\":\"Email Address\",\"emailCc\":\"Email Address\",\"emailTo\":\"Email Address\",\"fileHash\": \"FileHash-MD5\",\"parentProcessCmdLine\": \"Process\",\"parentProcessName\": \"Process\",\"recipientEmailAddress\":\"Email Address\",\"registryKey\": \"Registry\",\"registryKeyValue\": \"Registry\",\"reporter\":\"Email Address\",\"returnPath\":\"Email Address\",\"senderDomain\":\"Domain\",\"senderEmailAddress\": \"Email Address\",\"services\": \"Process\",\"sourceIp\": \"IP Address\",\"sourcePort\":\"Port\",\"sourceProcess\": \"Process\",\"targetAsset\":\"Host\",\"targetProcess\": \"Process\",\"url\": \"URL\",\"userName\": \"User\",\"userDetails\": \"User\",\"urlFull\": \"URL\",\"otherRecipients\": \"Email Address\"}",
-                "default_value": "{ \"attachmentNames\":\"File\",\"commandLine\": \"Process\",\"computerName\":\"Host\",\"decodedCommandLine\":\"Process\",\"destinationIp\": \"IP Address\",\"destinationPort\":\"Port\",\"domain\":\"Domain\",\"dllLoaded\": \"Process\",\"emailFrom\":\"Email Address\",\"emailCc\":\"Email Address\",\"emailTo\":\"Email Address\",\"fileHash\": \"FileHash-MD5\",\"parentProcessCmdLine\": \"Process\",\"parentProcessName\": \"Process\",\"recipientEmailAddress\":\"Email Address\",\"registryKey\": \"Registry\",\"registryKeyValue\": \"Registry\",\"reporter\":\"Email Address\",\"returnPath\":\"Email Address\",\"senderDomain\":\"Domain\",\"senderEmailAddress\": \"Email Address\",\"services\": \"Process\",\"sourceIp\": \"IP Address\",\"sourcePort\":\"Port\",\"sourceProcess\": \"Process\",\"targetAsset\":\"Host\",\"targetProcess\": \"Process\",\"url\": \"URL\",\"userName\": \"User\",\"userDetails\": \"User\",\"urlFull\": \"URL\",\"otherRecipients\": \"Email Address\"}"
-            },
-            {
-                "name": "Default_Indicator_TTL_Days",
-                "value": "20",
-                "default_value": "20"
-            },
-            {
-                "name": "Server_fqhn",
-                "value": "jmcmurray-jmcmurray.fortidemo.fortinet.com:14006",
-                "default_value": "master.fortisoar.in"
-            }
-        ],
         "playbooks": [
             {
-                "name": "SP - Lacework FortiCNAPP v0.1.0 (Beta)"
+                "name": "10 - SP - Lacework FortiCNAPP Composite Alert Incident Response"
+            }
+        ],
+        "connectors": [
+            {
+                "name": "AWS EC2",
+                "apiName": "aws"
+            },
+            {
+                "name": "Azure Commands",
+                "apiName": "azure-commands"
+            },
+            {
+                "name": "Azure Compute",
+                "apiName": "azure-compute"
+            },
+            {
+                "name": "Google Cloud Compute",
+                "apiName": "google-cloud-compute"
+            },
+            {
+                "name": "Lacework FortiCNAPP",
+                "apiName": "fortinet-forticnapp"
+            },
+            {
+                "name": "Slack",
+                "apiName": "slack"
             }
         ]
     }

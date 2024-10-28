@@ -1,0 +1,80 @@
+[
+    {
+        "name": "aws",
+        "label": "AWS EC2",
+        "category": [
+            "AWS Service"
+        ],
+        "description": "Amazon Elastic Compute Cloud (Amazon EC2) provides scalable computing capacity in the Amazon Web Services (AWS) cloud. You can use Amazon EC2 to launch as many or as few virtual servers as you need, configure security and networking, and manage storage.",
+        "publisher": "Fortinet",
+        "operation_roles": [],
+        "configurations": [],
+        "dataImports": [],
+        "install_mode": "rpm"
+    },
+    {
+        "name": "azure-commands",
+        "label": "Azure Commands",
+        "category": [
+            "Asset Management"
+        ],
+        "description": "Azure Commands are used to run Azure native commands for Azure resources configurations directly from FortiSOAR.",
+        "publisher": "Fortinet",
+        "operation_roles": [],
+        "configurations": [],
+        "dataImports": [],
+        "install_mode": "rpm"
+    },
+    {
+        "name": "azure-compute",
+        "label": "Azure Compute",
+        "category": [
+            "Compute Platform"
+        ],
+        "description": "Azure Virtual Machines are image service instances that provide on-demand and scalable computing resources with usage-based pricing. This connector facilitates automated operations to get list of Azure Compute VM, get information about an Azure Compute VM, create, start, restart, stop and delete of an Azure Compute VM",
+        "publisher": "Fortinet",
+        "operation_roles": [],
+        "configurations": [],
+        "dataImports": [],
+        "install_mode": "rpm"
+    },
+    {
+        "name": "google-cloud-compute",
+        "label": "Google Cloud Compute",
+        "category": [
+            "Compute Platform"
+        ],
+        "description": "Google Compute Engine's tooling and workflow supports to create advanced networks on the regional levels and load balancing capabilities in cloud computing. This connector facilitates automated operation related to GCE operations.",
+        "publisher": "Fortinet",
+        "operation_roles": [],
+        "configurations": [],
+        "dataImports": [],
+        "install_mode": "rpm"
+    },
+    {
+        "name": "fortinet-forticnapp",
+        "label": "Lacework FortiCNAPP",
+        "category": [
+            "Cloud Security"
+        ],
+        "description": "Lacework delivers end-to-end visibility into what\u2019s happening across your cloud environment, including detecting threats, vulnerabilities, misconfigurations, and unusual activity, so you can innovate with speed and safety.",
+        "publisher": "Fortinet",
+        "operation_roles": [],
+        "configurations": [],
+        "dataImports": [],
+        "install_mode": "rpm"
+    },
+    {
+        "name": "slack",
+        "label": "Slack",
+        "category": [
+            "Communication"
+        ],
+        "description": "Slack is a cloud-based set of proprietary team collaboration tools and services. This connector facilitates automated operations like list channels, list users, send message etc. This release of Slack connector supports bi-directional communication between Slack and FortiSOAR, allowing you to leverage the power of FortiSOAR as part of your daily communications and threat investigation routines.",
+        "publisher": "Fortinet",
+        "operation_roles": [],
+        "configurations": [],
+        "dataImports": [],
+        "install_mode": "rpm"
+    }
+]

@@ -1,6 +1,6 @@
 {
     "name": "laceworkFortiCNAPPCompositeAlertIncidentResponse",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "fsrMinCompatibility": "7.4.0",
     "type": "solutionpack",
     "local": true,
@@ -13,17 +13,10 @@
             "minVersion": "2.3.0"
         }
     ],
-    "featuredTags": [
-        {
-            "color": "#2d87e3",
-            "tag": "preview"
-        }
-    ],
     "prerequisite": null,
     "publisher": "Fortinet",
-    "contributor": "Jamie Mcmurray",
     "description": "This Solution Pack enables end-users to take action on Lacework FortiCNAPP alerts using FortiSOAR. It includes playbooks for both pulling composite alerts from Lacework FortiCNAPP and receiving pushed events via the Lacework alert channel. An enrichment playbook generates FortiSOAR alerts with extracted indicators, leveraging automatic enrichment within FortiSOAR. Additionally, an example Slack ChatOps workflow demonstrates an incident response process for Potentially Compromised Host alerts across AWS, Google Cloud, and Azure.",
-    "help": "https://github.com/fortinet-fortisoar/solution-pack-lacework-forticnapp/blob/release/1.0.0/README.md",
+    "help": null,
     "category": [
         "Cloud Security"
     ],
@@ -37,7 +30,7 @@
         "Google",
         "Lacework"
     ],
-    "date": "2024-09-26T05:08:32+00:00",
+    "date": "2024-10-07T21:30:16+00:00",
     "contents": {
         "playbooks": [
             {
@@ -68,6 +61,10 @@
             {
                 "name": "Slack",
                 "apiName": "slack"
+            },
+            {
+                "name": "Microsoft Team",
+                "apiName": "microsoft-teams"
             }
         ]
     }

@@ -15,8 +15,9 @@
     ],
     "prerequisite": null,
     "publisher": "Fortinet",
+    "contributor": "Jamie Mcmurray",
     "description": "This Solution Pack enables end-users to take action on Lacework FortiCNAPP alerts using FortiSOAR. It includes playbooks for both pulling composite alerts from Lacework FortiCNAPP and receiving pushed events via the Lacework alert channel. An enrichment playbook generates FortiSOAR alerts with extracted indicators, leveraging automatic enrichment within FortiSOAR. Additionally, an example Slack ChatOps workflow demonstrates an incident response process for Potentially Compromised Host alerts across AWS, Google Cloud, and Azure.",
-    "help": null,
+    "help": "https://github.com/fortinet-fortisoar/solution-pack-lacework-forticnapp/blob/release/2.0.0/README.md",
     "category": [
         "Cloud Security"
     ],

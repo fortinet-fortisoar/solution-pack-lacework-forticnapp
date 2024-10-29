@@ -5,6 +5,7 @@
 - **Publisher**: Fortinet 
 - **Contributor**: Jamie Mcmurray 
 - **Compatible Version**: FortiSOAR v7.4.0 and above
+- [Release Notes](./release_notes.md)
 
 ## Overview
 

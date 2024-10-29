@@ -4,10 +4,12 @@
     "Lacework",
     "PostCreate",
     "alerts",
+    "auth",
     "composite",
     "create",
     "dataingestion",
     "fetch",
     "response",
+    "webhook",
     "webook"
 ]

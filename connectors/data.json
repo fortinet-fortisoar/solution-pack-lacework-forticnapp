@@ -1,5 +1,18 @@
 [
     {
+        "name": "aws-commands",
+        "label": "AWS Commands",
+        "category": [
+            "IT Services"
+        ],
+        "description": "AWS Commands are used to run AWS native commands for AWS resources configurations directly from FortiSOAR.",
+        "publisher": "Fortinet",
+        "operation_roles": [],
+        "configurations": [],
+        "dataImports": [],
+        "install_mode": "rpm"
+    },
+    {
         "name": "aws",
         "label": "AWS EC2",
         "category": [

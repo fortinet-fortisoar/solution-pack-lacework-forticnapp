@@ -9,6 +9,7 @@ The **Lacework FortiCNAPP Composite Alert Incident Response** solution pack cont
 
 | Name | Description |
 | :- | :- |
+| AWS Commands | AWS Commands are used to run AWS native commands for AWS resources configurations directly from FortiSOAR. |
 | AWS EC2 | Amazon Elastic Compute Cloud (Amazon EC2) provides scalable computing capacity in the Amazon Web Services (AWS) cloud. You can use Amazon EC2 to launch as many or as few virtual servers as you need, configure security and networking, and manage storage. |
 | Azure Commands | Azure Commands are used to run Azure native commands for Azure resources configurations directly from FortiSOAR. |
 | Azure Compute | Azure Virtual Machines are image service instances that provide on-demand and scalable computing resources with usage-based pricing. This connector facilitates automated operations to get list of Azure Compute VM, get information about an Azure Compute VM, create, start, restart, stop and delete of an Azure Compute VM. |

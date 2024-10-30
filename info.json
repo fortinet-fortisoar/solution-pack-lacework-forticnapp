@@ -40,6 +40,10 @@
         ],
         "connectors": [
             {
+                "name": "AWS Commands",
+                "apiName": "aws-commands"
+            },
+            {
                 "name": "AWS EC2",
                 "apiName": "aws"
             },

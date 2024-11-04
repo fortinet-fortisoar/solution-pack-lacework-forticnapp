@@ -1,5 +1,18 @@
 [
     {
+        "name": "aws-commands",
+        "label": "AWS Commands",
+        "category": [
+            "IT Services"
+        ],
+        "description": "AWS Commands are used to run AWS native commands for AWS resources configurations directly from FortiSOAR.",
+        "publisher": "Fortinet",
+        "operation_roles": [],
+        "configurations": [],
+        "dataImports": [],
+        "install_mode": "rpm"
+    },
+    {
         "name": "aws",
         "label": "AWS EC2",
         "category": [
@@ -71,6 +84,19 @@
             "Communication"
         ],
         "description": "Slack is a cloud-based set of proprietary team collaboration tools and services. This connector facilitates automated operations like list channels, list users, send message etc. This release of Slack connector supports bi-directional communication between Slack and FortiSOAR, allowing you to leverage the power of FortiSOAR as part of your daily communications and threat investigation routines.",
+        "publisher": "Fortinet",
+        "operation_roles": [],
+        "configurations": [],
+        "dataImports": [],
+        "install_mode": "rpm"
+    },
+    {
+        "name": "microsoft-teams",
+        "label": "Microsoft Teams",
+        "category": [
+            "Communication and Coordination"
+        ],
+        "description": "Microsoft Teams is a chat-based workspace in Office 365 that provides global, remote, and dispersed teams with the ability to work together and share information using a common space. This connector facilitates automated operation related to teams.",
         "publisher": "Fortinet",
         "operation_roles": [],
         "configurations": [],

@@ -20,6 +20,34 @@
     "steps": [
         {
             "@type": "WorkflowStep",
+            "name": "Check Record Count",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "option": "has alerts",
+                        "step_iri": "\/api\/3\/workflow_steps\/14be6cc2-4898-40a8-81f1-6bca03d5b4e0",
+                        "condition": "{{ vars.steps.Record_List.record_data | length > 0 }}",
+                        "step_name": "Get Alert Details"
+                    },
+                    {
+                        "option": "no alerts",
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/669bb2a9-e12a-40bd-925d-91fd749195fa",
+                        "step_name": "No Action"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "720",
+            "left": "460",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
+            "uuid": "3229ff5e-3ac5-434f-9388-ac582cfc4201"
+        },
+        {
+            "@type": "WorkflowStep",
             "name": "Create FortiSOAR Alert from Lacework FortiCNAPP Alert",
             "description": null,
             "arguments": {
@@ -61,7 +89,7 @@
             },
             "status": null,
             "top": "380",
-            "left": "440",
+            "left": "460",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
             "uuid": "7d9f55f2-1fb6-4438-a424-25f8cdd817a6"
@@ -81,11 +109,16 @@
                     "returns": "",
                     "category": "{{vars.category}}",
                     "severity": "{{vars.severity}}",
-                    "alertType": "{{vars.alertType}}",
+                    "alertType": "{{ vars.item }}",
                     "startTime": "{% if vars.fetch_alerts_in_last_X_minutes is defined and vars.fetch_alerts_in_last_X_minutes > 0 %}{{ arrow.utcnow().shift(minutes=-(vars.fetch_alerts_in_last_X_minutes)).strftime('%Y-%m-%dT%H:%M:%S.%fZ') }}{% else %}{{vars.last_pull_time}}{% endif %}",
                     "subCategory": "{{vars.subCategory}}"
                 },
                 "version": "1.0.0",
+                "for_each": {
+                    "item": "{{ vars.event_types }}",
+                    "parallel": false,
+                    "condition": ""
+                },
                 "connector": "fortinet-forticnapp",
                 "operation": "search_alerts",
                 "operationTitle": "Search Alerts",
@@ -126,8 +159,8 @@
                 "step_variables": []
             },
             "status": null,
-            "top": "619",
-            "left": "787",
+            "top": "620",
+            "left": "800",
             "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
             "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
             "uuid": "b8e6a2a2-f4fa-4188-9985-2686802cc24e"
@@ -180,7 +213,7 @@
             },
             "status": null,
             "top": "280",
-            "left": "440",
+            "left": "460",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
             "uuid": "39401236-f1d2-49af-b7b4-afc5e63f6199"
@@ -208,21 +241,33 @@
             },
             "status": null,
             "top": "480",
-            "left": "440",
+            "left": "460",
             "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
             "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
             "uuid": "020354dd-2266-4955-8ed7-184fc18754fb"
         },
         {
             "@type": "WorkflowStep",
+            "name": "No Action",
+            "description": null,
+            "arguments": [],
+            "status": null,
+            "top": "840",
+            "left": "80",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
+            "uuid": "669bb2a9-e12a-40bd-925d-91fd749195fa"
+        },
+        {
+            "@type": "WorkflowStep",
             "name": "Record List",
             "description": null,
             "arguments": {
-                "record_data": "{% if (vars.steps.Fetch_Alerts.data)|type_debug=='list'%}{{vars.steps.Fetch_Alerts.data}}{% else %}[]{% endif %}"
+                "record_data": "{%- set results=[] %}\n{%- for result in vars.steps.Fetch_Alerts %}\n{%- if (result.data)|type_debug=='list'%}\n{%- if results.append(result.data) %}{%- endif %}\n{%- endif %}\n{%- endfor %}\n{{ results | flatten }}"
             },
             "status": null,
-            "top": "734",
-            "left": "82",
+            "top": "720",
+            "left": "80",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
             "uuid": "79829488-2d81-44e4-bc03-30b21911b3db"
@@ -235,19 +280,19 @@
                 "source": "",
                 "status": "Open",
                 "user_id": "{{vars.bot_context.user_id}}",
-                "category": "",
-                "severity": "",
-                "alertType": "PotentiallyCompromisedHost",
+                "category": "Composite",
+                "severity": "High",
+                "event_types": "[\"PotentiallyCompromisedHost\",\"PotentialPenetrationTest\",\"PotentiallyCompromisedAwsCredentials\"]",
                 "subCategory": "",
                 "pullTimeMacro": "LaceworkLastPullTime_{{vars['audit_info']['cyops_playbook_iri'].split('\/')[-1].replace('-','_')}}",
-                "alerts_type_map": "{'PotentiallyCompromisedAwsCredentials': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedHost': {{'AlertType'| picklist('Anomalous Activity') }}}",
+                "alerts_type_map": "{'PotentiallyCompromisedAwsCredentials': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedHost': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentialPenetrationTest': {{'AlertType'| picklist('Anomalous Activity') }}, 'PotentiallyCompromisedAwsCredentials': {{'AlertType'| picklist('Anomalous Activity') }}\n}\n}",
                 "alerts_status_map": "{'Open': {{'AlertStatus'| picklist('Open') }},'InProgress': {{'AlertStatus'| picklist('Pending') }}, 'Closed': {{'AlertStatus'| picklist('Closed') }}}",
                 "alerts_severity_map": "{'Info': {{'Severity'| picklist('Minimal') }}, 'Low': {{'Severity'| picklist('Low') }}, 'Medium': {{'Severity'| picklist('Medium') }}, 'High': {{'Severity'| picklist('High') }}, 'Critical': {{'Severity'| picklist('Critical') }}}",
                 "fetch_alerts_in_last_X_minutes": "1440"
             },
             "status": null,
             "top": "180",
-            "left": "440",
+            "left": "460",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
             "uuid": "1a1edb64-b298-4ee6-afc6-01babcefa928"
@@ -262,7 +307,7 @@
             },
             "status": null,
             "top": "80",
-            "left": "440",
+            "left": "460",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
             "uuid": "6a5543fa-1ea6-40dd-81cf-1786eb10872e"
@@ -299,7 +344,7 @@
             },
             "status": null,
             "top": "20",
-            "left": "580",
+            "left": "600",
             "stepType": "\/api\/3\/workflow_step_types\/b348f017-9a94-471f-87f8-ce88b6a7ad62",
             "group": null,
             "uuid": "cf28a4c0-977b-4425-8e8c-a2a2ffd50f87"
@@ -312,8 +357,8 @@
                 "data": "{{vars.steps.Fetch_Sample_Alerts.data}}"
             },
             "status": null,
-            "top": "754",
-            "left": "787",
+            "top": "720",
+            "left": "800",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": "\/api\/3\/workflow_groups\/d49ed810-3361-4c2b-9a15-f796bac65ae0",
             "uuid": "46e3f686-9ec6-494e-879e-6ecc7bd1573f"
@@ -370,6 +415,26 @@
     "routes": [
         {
             "@type": "WorkflowRoute",
+            "name": "Check Record Count -> Get Alert Details",
+            "targetStep": "\/api\/3\/workflow_steps\/14be6cc2-4898-40a8-81f1-6bca03d5b4e0",
+            "sourceStep": "\/api\/3\/workflow_steps\/3229ff5e-3ac5-434f-9388-ac582cfc4201",
+            "label": "has alerts",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "05e8bcdd-cba0-4db3-aa50-713bbee98057"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Check Record Count -> No Action",
+            "targetStep": "\/api\/3\/workflow_steps\/669bb2a9-e12a-40bd-925d-91fd749195fa",
+            "sourceStep": "\/api\/3\/workflow_steps\/3229ff5e-3ac5-434f-9388-ac582cfc4201",
+            "label": "no alerts",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "b6270961-15b5-450b-b232-0b13b334b441"
+        },
+        {
+            "@type": "WorkflowRoute",
             "name": "Configuration -> Get Macro Value",
             "targetStep": "\/api\/3\/workflow_steps\/39401236-f1d2-49af-b7b4-afc5e63f6199",
             "sourceStep": "\/api\/3\/workflow_steps\/1a1edb64-b298-4ee6-afc6-01babcefa928",
@@ -406,7 +471,7 @@
             "label": null,
             "isExecuted": false,
             "group": null,
-            "uuid": "dd4a496d-8bf4-4363-aa62-185b4d6a011e"
+            "uuid": "ac60215f-ec66-4ba5-aa57-6a4f90a9cb22"
         },
         {
             "@type": "WorkflowRoute",
@@ -460,13 +525,13 @@
         },
         {
             "@type": "WorkflowRoute",
-            "name": "Record List -> Get Alert Details",
-            "targetStep": "\/api\/3\/workflow_steps\/14be6cc2-4898-40a8-81f1-6bca03d5b4e0",
+            "name": "Record List -> Check Record Count",
+            "targetStep": "\/api\/3\/workflow_steps\/3229ff5e-3ac5-434f-9388-ac582cfc4201",
             "sourceStep": "\/api\/3\/workflow_steps\/79829488-2d81-44e4-bc03-30b21911b3db",
             "label": null,
             "isExecuted": false,
             "group": null,
-            "uuid": "92798613-b3e7-4209-bfa9-8b8547f1ee2f"
+            "uuid": "f24bf218-c838-42b6-95c8-b0c5f829248f"
         },
         {
             "@type": "WorkflowRoute",
@@ -557,6 +622,7 @@
         "create",
         "dataingestion",
         "fetch",
+        "FortiCNAPP",
         "Lacework"
     ]
 }

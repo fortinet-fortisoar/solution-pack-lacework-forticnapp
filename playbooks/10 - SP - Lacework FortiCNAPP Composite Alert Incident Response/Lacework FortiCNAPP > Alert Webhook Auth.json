@@ -1,0 +1,101 @@
+{
+    "@type": "Workflow",
+    "triggerLimit": null,
+    "name": "Lacework FortiCNAPP > Alert Webhook Auth",
+    "aliasName": null,
+    "tag": null,
+    "description": "Authenticates Lacework Webhook Call",
+    "isActive": true,
+    "debug": false,
+    "singleRecordExecution": false,
+    "remoteExecutableFlag": false,
+    "parameters": [],
+    "synchronous": false,
+    "collection": "\/api\/3\/workflow_collections\/db426f50-e61a-4c76-b7d2-7df39beaf917",
+    "versions": [],
+    "triggerStep": "\/api\/3\/workflow_steps\/a5805fac-a679-4c38-a692-4f870c53ec39",
+    "steps": [
+        {
+            "@type": "WorkflowStep",
+            "name": "Auth Webhook",
+            "description": null,
+            "arguments": {
+                "params": {
+                    "url": "https:\/\/{{globalVars.Server_fqhn}}\/api\/triggers\/1\/lacework_forticnapp_composite",
+                    "body": "{{ vars.input.params.api_body }}",
+                    "method": "POST",
+                    "params": "",
+                    "verify": true,
+                    "headers": "{ \"Authorization\": \"API-KEY {{ vars.input.params.api_params.api_token }}\", \"Content-Type\": \"application-key\/json;charset=UTF-8\", \"Accept\": \"application\/json\" }",
+                    "password": "",
+                    "username": "",
+                    "auth_config": ""
+                },
+                "version": "3.3.0",
+                "connector": "cyops_utilities",
+                "operation": "api_call",
+                "operationTitle": "Utils: Make REST API Call",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "220",
+            "left": "460",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "78623658-3883-4e77-9373-c3e5f545c668"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Start",
+            "description": null,
+            "arguments": {
+                "route": "deferred\/lacework_forticnapp_composite",
+                "__triggerLimit": true,
+                "step_variables": {
+                    "input": {
+                        "params": {
+                            "api_body": "{{vars.request.data}}",
+                            "api_params": "{{vars.request.params}}"
+                        }
+                    }
+                },
+                "triggerOnSource": true,
+                "triggerOnReplicate": false,
+                "authentication_methods": [
+                    "anonymous"
+                ]
+            },
+            "status": null,
+            "top": "60",
+            "left": "460",
+            "stepType": "\/api\/3\/workflow_step_types\/df26c7a2-4166-4ca5-91e5-548e24c01b5f",
+            "group": null,
+            "uuid": "a5805fac-a679-4c38-a692-4f870c53ec39"
+        }
+    ],
+    "routes": [
+        {
+            "@type": "WorkflowRoute",
+            "name": "Start -> Auth Webhook",
+            "targetStep": "\/api\/3\/workflow_steps\/78623658-3883-4e77-9373-c3e5f545c668",
+            "sourceStep": "\/api\/3\/workflow_steps\/a5805fac-a679-4c38-a692-4f870c53ec39",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "106f9b49-cb3d-418c-bf57-943a7cd82588"
+        }
+    ],
+    "groups": [],
+    "priority": "\/api\/3\/picklists\/2b563c61-ae2c-41c0-a85a-c9709585e3f2",
+    "uuid": "efeca071-5a6b-41e7-9bd0-fd3892a726f6",
+    "owners": [],
+    "isPrivate": false,
+    "deletedAt": null,
+    "recordTags": [
+        "alerts",
+        "auth",
+        "FortiCNAPP",
+        "Lacework",
+        "webhook"
+    ]
+}
